@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hunter Brown — Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0f1115;
+      --bg-card: #1c1f27;
+      --border: #2a2e38;
+      --text: #e0e2e8;
+      --text-muted: #8a8f9d;
+      --accent: #4a9eff;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    html { font-size: 15px; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .resume {
+      max-width: 850px;
+      width: 100%;
+    }
+
+    /* === Header === */
+    .resume-header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .resume-name {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .resume-name .accent { color: var(--accent); }
+
+    .resume-title {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+
+    .resume-contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .resume-contact a { color: var(--text-muted); }
+    .resume-contact a:hover { color: var(--accent); }
+
+    .contact-sep {
+      color: var(--border);
+    }
+
+    /* === Layout === */
+    .resume-body {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 2.5rem;
+    }
+
+    /* === Section Labels === */
+    .section-title {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .resume-section {
+      margin-bottom: 2rem;
+    }
+
+    /* === Experience Entries === */
+    .entry { margin-bottom: 1.5rem; }
+    .entry:last-child { margin-bottom: 0; }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.2rem;
+    }
+
+    .entry-role {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .entry-date {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .entry-company {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .entry-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .entry-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .entry-list li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: 0.3rem;
+      line-height: 1.5;
+    }
+
+    .entry-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* === Sidebar === */
+    .sidebar .resume-section { margin-bottom: 1.75rem; }
+
+    .skill-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--text);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.25rem 0.6rem;
+      margin: 0 0.35rem 0.35rem 0;
+    }
+
+    .sidebar-item {
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-item:last-child { margin-bottom: 0; }
+
+    .sidebar-item h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .sidebar-item p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .sidebar-item .date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .prof-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .prof-list li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      padding-left: 0.85rem;
+      position: relative;
+    }
+
+    .prof-list li::before {
+      content: '>';
+      font-family: var(--mono);
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    /* === Print === */
+    @media print {
+      html { font-size: 13px; }
+      body {
+        background: #fff;
+        color: #1a1a1a;
+        padding: 0;
+      }
+      .resume { max-width: 100%; }
+      .resume-header { border-bottom-color: #1a1a1a; }
+      .resume-name .accent { color: #2a6cb8; }
+      .resume-title { color: #2a6cb8; }
+      .section-title { color: #2a6cb8; border-bottom-color: #ccc; }
+      .entry-date { color: #666; }
+      .entry-company { color: #555; }
+      .entry-desc, .entry-list li, .sidebar-item p, .prof-list li { color: #444; }
+      .resume-contact, .resume-contact a { color: #555; }
+      .contact-sep { color: #ccc; }
+      .skill-tag {
+        background: #f0f0f0;
+        border-color: #ddd;
+        color: #333;
+      }
+      .entry-list li::before, .prof-list li::before { color: #2a6cb8; }
+    }
+
+    /* === Responsive === */
+    @media (max-width: 650px) {
+      .resume-body {
+        grid-template-columns: 1fr;
+      }
+      .entry-header {
+        flex-direction: column;
+      }
+    }
+
+    /* === TODO marker === */
+    .todo {
+      background: rgba(240, 145, 58, 0.15);
+      border: 1px dashed #f0913a;
+      border-radius: 3px;
+      padding: 0 0.3rem;
+      font-size: 0.8rem;
+      color: #f0913a;
+    }
+  </style>
+</head>
+<body>
+  <div class="resume">
+
+    <!-- Header -->
+    <header class="resume-header">
+      <h1 class="resume-name">Hunter Stokes Brown<span class="accent">.</span></h1>
+      <p class="resume-title">Field Service Engineer</p>
+      <div class="resume-contact">
+        <span><a href="mailto:hunterstokes@me.com">hunterstokes@me.com</a></span>
+        <span class="contact-sep">|</span>
+        <span>(760) 224-0384</span>
+        <span class="contact-sep">|</span>
+        <span>Oakland, CA</span>
+        <span class="contact-sep">|</span>
+        <span><a href="https://www.linkedin.com/in/huntersbrown/" target="_blank">LinkedIn</a></span>
+        <span class="contact-sep">|</span>
+        <span><a href="https://github.com/hunterstokes/" target="_blank">GitHub</a></span>
+      </div>
+    </header>
+
+    <div class="resume-body">
+
+      <!-- Main Column -->
+      <main>
+
+        <!-- Summary -->
+        <div class="resume-section">
+          <h3 class="section-title">Professional Summary</h3>
+          <p class="entry-desc">
+            Field Service Engineer with hands-on experience servicing and maintaining complex instrumentation at the intersection of hardware and software. Proven ability to diagnose, troubleshoot, and resolve technical issues across mechanical, electrical, and software systems. Background spanning food industry craftsmanship to full-stack web development provides a unique perspective on precision, problem-solving, and customer engagement. Passionate about technology, continuous learning, and building lasting client relationships.
+          </p>
+        </div>
+
+        <!-- Experience -->
+        <div class="resume-section">
+          <h3 class="section-title">Experience</h3>
+
+          <div class="entry">
+            <div class="entry-header">
+              <span class="entry-role">Field Service Engineer</span>
+              <span class="entry-date">2/2025 — Present</span>
+            </div>
+            <div class="entry-company">Illumina — Oakland, CA</div>
+            <ul class="entry-list">
+              <li>Service and maintain advanced genomic sequencing platforms including hardware, software, and fluidics systems</li>
+              <li>Diagnose and resolve complex instrumentation issues by bridging mechanical, electrical, and software troubleshooting</li>
+              <li>Deliver on-site preventive maintenance, installations, and upgrades for customer laboratories</li>
+              <li>Collaborate with cross-functional teams to document and escalate technical issues</li>
+              <li>Build and maintain strong customer relationships through clear communication and reliable follow-through</li>
+            </ul>
+          </div>
+
+          <div class="entry">
+            <div class="entry-header">
+              <span class="entry-role">Field Service Engineer</span>
+              <span class="entry-date">2/2024 — 2/2025</span>
+            </div>
+            <div class="entry-company">IQVIA — Bay Area, CA</div>
+            <ul class="entry-list">
+              <li>Serviced and maintained laboratory instrumentation across customer sites</li>
+              <li>Performed hardware diagnostics, calibrations, and software troubleshooting</li>
+              <li>Managed service schedules and documentation to ensure compliance and uptime</li>
+            </ul>
+          </div>
+
+          <div class="entry">
+            <div class="entry-header">
+              <span class="entry-role">Meat Cutter</span>
+              <span class="entry-date">8/2021 — 2/2024</span>
+            </div>
+            <div class="entry-company">Piedmont Grocery — Oakland, CA</div>
+            <ul class="entry-list">
+              <li>Provided expert customer service in an upscale grocery environment</li>
+              <li>Ensured quality assurance, product placement, and inventory management</li>
+            </ul>
+          </div>
+
+          <div class="entry">
+            <div class="entry-header">
+              <span class="entry-role">Head Chef &amp; Manager</span>
+              <span class="entry-date">3/2019 — 3/2020</span>
+            </div>
+            <div class="entry-company">Yataimura Maru — Portland, OR</div>
+            <ul class="entry-list">
+              <li>Led kitchen operations and managed front- and back-of-house teams in a high-volume environment</li>
+              <li>Maintained rigorous quality standards while balancing speed and customer experience</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <!-- Technical Skills -->
+        <div class="resume-section">
+          <h3 class="section-title">Technical Skills</h3>
+          <span class="skill-tag">Hardware Diagnostics</span>
+          <span class="skill-tag">Instrumentation</span>
+          <span class="skill-tag">Preventive Maintenance</span>
+          <span class="skill-tag">Software Troubleshooting</span>
+          <span class="skill-tag">Fluidics Systems</span>
+          <span class="skill-tag">Electrical Systems</span>
+          <span class="skill-tag">Documentation</span>
+          <span class="skill-tag">Git / GitHub</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">PC Building</span>
+          <span class="skill-tag">Networking</span>
+          <span class="skill-tag">Linux</span>
+        </div>
+
+        <!-- Professional Skills -->
+        <div class="resume-section">
+          <h3 class="section-title">Professional Skills</h3>
+          <ul class="prof-list">
+            <li>Complex Problem Solving</li>
+            <li>Customer Relationship Mgmt</li>
+            <li>Clear Communication</li>
+            <li>Collaborative & Adaptive</li>
+            <li>Self-Directed Learner</li>
+            <li>Attention to Detail</li>
+          </ul>
+        </div>
+
+        <!-- Education -->
+        <div class="resume-section">
+          <h3 class="section-title">Education</h3>
+
+          <div class="sidebar-item">
+            <h4>LEARN Academy</h4>
+            <span class="date">2018</span>
+            <p>Full-stack web development — JavaScript, React, Ruby on Rails, PostgreSQL</p>
+          </div>
+
+          <div class="sidebar-item">
+            <h4>University of Oregon</h4>
+            <span class="date">2014 — 2017</span>
+            <p>Statistics, Economics, Mathematics, Business Administration</p>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </div>
+</body>
+</html>
