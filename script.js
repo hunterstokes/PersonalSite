@@ -167,6 +167,71 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== PC build shopping links =====
+  // Monetization config: set your Amazon Associates tag (e.g. 'huntersb-20')
+  // and every generated Amazon link is credited to you automatically.
+  // Newegg affiliate links run through CJ/Rakuten deep links — once enrolled,
+  // replace the plain search URL below with your deep-link prefix.
+  const AMAZON_AFFILIATE_TAG = '';
+
+  function amazonSearchUrl(part) {
+    return `https://www.amazon.com/s?k=${encodeURIComponent(part)}` +
+      (AMAZON_AFFILIATE_TAG ? `&tag=${AMAZON_AFFILIATE_TAG}` : '');
+  }
+
+  function neweggSearchUrl(part) {
+    return `https://www.newegg.com/p/pl?d=${encodeURIComponent(part)}`;
+  }
+
+  function amazonProductUrl(asin) {
+    return `https://www.amazon.com/dp/${asin}` +
+      (AMAZON_AFFILIATE_TAG ? `?tag=${AMAZON_AFFILIATE_TAG}` : '');
+  }
+
+  // Privacy-friendly event counting — no-op until GoatCounter is enabled
+  function trackEvent(name) {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }
+
+  // Shared with guide.js (the build configurator)
+  window.hbShop = { amazonSearchUrl, neweggSearchUrl, amazonProductUrl, trackEvent };
+
+  const specLists = document.querySelectorAll('.build-specs');
+  if (specLists.length) {
+    specLists.forEach(list => {
+      list.querySelectorAll('div').forEach(row => {
+        const dt = row.querySelector('dt');
+        const dd = row.querySelector('dd');
+        if (!dt || !dd) return;
+        const part = dd.textContent.trim();
+        const amazonUrl = amazonSearchUrl(part);
+        const neweggUrl = neweggSearchUrl(part);
+
+        const links = document.createElement('span');
+        links.className = 'shop-links';
+        [['Amazon', amazonUrl], ['Newegg', neweggUrl]].forEach(([name, url], i) => {
+          if (i > 0) {
+            const sep = document.createElement('span');
+            sep.textContent = ' · ';
+            sep.setAttribute('aria-hidden', 'true');
+            links.appendChild(sep);
+          }
+          const a = document.createElement('a');
+          a.href = url;
+          a.target = '_blank';
+          a.rel = 'sponsored nofollow noopener';
+          a.textContent = name;
+          a.setAttribute('aria-label', `Shop for ${dt.textContent.trim()} ${part} on ${name} (opens in new tab)`);
+          a.addEventListener('click', () => trackEvent(`shop-${name.toLowerCase()}-builds-page`));
+          links.appendChild(a);
+        });
+        dd.appendChild(links);
+      });
+    });
+  }
+
   // ===== Hero subtitle typewriter =====
   const typeTarget = document.getElementById('type-text');
   if (typeTarget && !reducedMotion) {

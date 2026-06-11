@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC Build Guide — Hunter Brown</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0f1115">
+  <meta name="description" content="Interactive PC build guide by Hunter Brown — pick a preset, customize every part, and get a parts list with prices.">
+  <link rel="canonical" href="https://huntersb.com/guide.html">
+  <meta property="og:title" content="PC Build Guide — spec out your own PC">
+  <meta property="og:description" content="Pick a preset, customize every part, and get a complete parts list with estimated prices.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://huntersb.com/guide.html">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much should I spend on a power supply?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Plan around 10% of your build budget. Get a reputable 80+ Gold unit with about 40% headroom over your estimated system draw — the guide calculates that for you. A failing cheap PSU can take other parts with it." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is DDR5 worth it over DDR4?",
+        "acceptedAnswer": { "@type": "Answer", "text": "In 2026, yes — every current platform in this guide is DDR5, prices have normalized, and DDR5-6000 CL30 is the sweet spot for AMD AM5 systems." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need liquid cooling?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Usually not. A quality tower air cooler handles most CPUs quietly. Liquid AIOs make sense for 16-core chips under sustained load, compact cases, or aesthetics." }
+      },
+      {
+        "@type": "Question",
+        "name": "Will all the parts I pick here fit together?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — the guide filters motherboards to your CPU platform, cases to your motherboard size and cooler, and power supplies to your case, and it warns you if the PSU is undersized for the build." }
+      },
+      {
+        "@type": "Question",
+        "name": "How accurate are the prices?",
+        "acceptedAnswer": { "@type": "Answer", "text": "They're street-price estimates reviewed periodically, not live quotes. PC part prices move constantly — treat the total as a planning number and check current prices via the part links." }
+      }
+    ]
+  }
+  </script>
+  <!--
+    Privacy-friendly analytics (GoatCounter — no cookies, no consent banner needed):
+    1. Create a free account at https://www.goatcounter.com
+    2. Replace MYCODE with your site code and uncomment the line below (on every page).
+  <script data-goatcounter="https://MYCODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  -->
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Decorative grid overlay -->
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight -->
+  <div class="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="builds.html">My Builds</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="game.html">Play</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="nav-burger" id="nav-burger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="builds-main" id="main">
+    <header class="builds-header">
+      <p class="hero-tag">Interactive Guide</p>
+      <h1>Spec your own PC<span class="accent">.</span></h1>
+      <p class="builds-intro">
+        Start from a preset, then swap any part. Compatibility is handled for you — motherboards follow your CPU platform, and the guide flags an undersized power supply. Prices are street-price estimates and drift over time.
+      </p>
+      <p class="builds-disclosure">
+        <strong>Heads up:</strong> the shop links in the summary may be affiliate links.
+        As an Amazon Associate I earn from qualifying purchases — at no extra
+        cost to you.
+      </p>
+    </header>
+
+    <details class="wizard">
+      <summary>Not sure where to start? Answer three questions</summary>
+      <div class="wizard-body">
+        <fieldset class="wizard-q">
+          <legend>What's your budget?</legend>
+          <input type="radio" name="wiz-budget" id="wiz-b-low" value="low" class="visually-hidden builder-radio">
+          <label class="wizard-chip" for="wiz-b-low">Around $1,000</label>
+          <input type="radio" name="wiz-budget" id="wiz-b-mid" value="mid" class="visually-hidden builder-radio" checked>
+          <label class="wizard-chip" for="wiz-b-mid">Around $1,500</label>
+          <input type="radio" name="wiz-budget" id="wiz-b-high" value="high" class="visually-hidden builder-radio">
+          <label class="wizard-chip" for="wiz-b-high">$2,000 or more</label>
+        </fieldset>
+        <fieldset class="wizard-q">
+          <legend>What's it mainly for?</legend>
+          <input type="radio" name="wiz-use" id="wiz-u-gaming" value="gaming" class="visually-hidden builder-radio" checked>
+          <label class="wizard-chip" for="wiz-u-gaming">Gaming</label>
+          <input type="radio" name="wiz-use" id="wiz-u-creative" value="creative" class="visually-hidden builder-radio">
+          <label class="wizard-chip" for="wiz-u-creative">Creative work</label>
+        </fieldset>
+        <fieldset class="wizard-q">
+          <legend>What resolution do you play at?</legend>
+          <input type="radio" name="wiz-res" id="wiz-r-1080" value="1080" class="visually-hidden builder-radio">
+          <label class="wizard-chip" for="wiz-r-1080">1080p</label>
+          <input type="radio" name="wiz-res" id="wiz-r-1440" value="1440" class="visually-hidden builder-radio" checked>
+          <label class="wizard-chip" for="wiz-r-1440">1440p</label>
+          <input type="radio" name="wiz-res" id="wiz-r-4k" value="4k" class="visually-hidden builder-radio">
+          <label class="wizard-chip" for="wiz-r-4k">4K</label>
+        </fieldset>
+        <button type="button" class="game-btn" id="wizard-apply">Recommend a build</button>
+      </div>
+    </details>
+
+    <div class="preset-bar" id="preset-bar" role="group" aria-label="Build presets"></div>
+    <p class="prices-stamp" id="prices-stamp"></p>
+
+    <div class="guide-layout">
+      <form id="builder" class="builder" aria-label="Component choices"></form>
+
+      <aside class="build-summary" aria-label="Your build summary">
+        <h2>Your build</h2>
+        <ul id="summary-list" class="summary-list"></ul>
+        <p class="summary-total-row">
+          <span>Estimated total</span>
+          <strong id="summary-total" aria-live="polite">$0</strong>
+        </p>
+        <p id="summary-perf" class="summary-perf"></p>
+        <p id="summary-draw" class="summary-draw"></p>
+        <p id="summary-note" class="summary-note" role="status" aria-live="polite"></p>
+        <div class="summary-actions">
+          <button type="button" class="game-btn" id="copy-build">Copy build list</button>
+          <button type="button" class="game-btn" id="share-build">Share build</button>
+        </div>
+      </aside>
+    </div>
+
+    <section class="guide-faq" aria-labelledby="faq-heading">
+      <h2 id="faq-heading">Build FAQ</h2>
+      <details>
+        <summary>How much should I spend on a power supply?</summary>
+        <p>Plan around 10% of your build budget. Get a reputable 80+ Gold unit with about 40% headroom over your estimated system draw — the summary panel calculates that for you. A failing cheap PSU can take other parts with it.</p>
+      </details>
+      <details>
+        <summary>Is DDR5 worth it over DDR4?</summary>
+        <p>In 2026, yes — every current platform in this guide is DDR5, prices have normalized, and DDR5-6000 CL30 is the sweet spot for AMD AM5 systems.</p>
+      </details>
+      <details>
+        <summary>Do I need liquid cooling?</summary>
+        <p>Usually not. A quality tower air cooler handles most CPUs quietly. Liquid AIOs make sense for 16-core chips under sustained load, compact cases, or aesthetics.</p>
+      </details>
+      <details>
+        <summary>Will all the parts I pick here fit together?</summary>
+        <p>Yes — the guide filters motherboards to your CPU platform, cases to your motherboard size and cooler, and power supplies to your case, and it warns you if the PSU is undersized for the build.</p>
+      </details>
+      <details>
+        <summary>How accurate are the prices?</summary>
+        <p>They're street-price estimates reviewed periodically, not live quotes. PC part prices move constantly — treat the total as a planning number and check current prices via the part links.</p>
+      </details>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+        <span class="footer-built">Built with vanilla HTML / CSS / JS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="guide.js"></script>
+</body>
+</html>
