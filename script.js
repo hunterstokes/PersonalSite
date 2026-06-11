@@ -174,6 +174,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // replace the plain search URL below with your deep-link prefix.
   const AMAZON_AFFILIATE_TAG = '';
 
+  function amazonSearchUrl(part) {
+    return `https://www.amazon.com/s?k=${encodeURIComponent(part)}` +
+      (AMAZON_AFFILIATE_TAG ? `&tag=${AMAZON_AFFILIATE_TAG}` : '');
+  }
+
+  function neweggSearchUrl(part) {
+    return `https://www.newegg.com/p/pl?d=${encodeURIComponent(part)}`;
+  }
+
+  // Shared with guide.js (the build configurator)
+  window.hbShop = { amazonSearchUrl, neweggSearchUrl };
+
   const specLists = document.querySelectorAll('.build-specs');
   if (specLists.length) {
     specLists.forEach(list => {
@@ -182,11 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const dd = row.querySelector('dd');
         if (!dt || !dd) return;
         const part = dd.textContent.trim();
-        const query = encodeURIComponent(part);
-
-        const amazonUrl = `https://www.amazon.com/s?k=${query}` +
-          (AMAZON_AFFILIATE_TAG ? `&tag=${AMAZON_AFFILIATE_TAG}` : '');
-        const neweggUrl = `https://www.newegg.com/p/pl?d=${query}`;
+        const amazonUrl = amazonSearchUrl(part);
+        const neweggUrl = neweggSearchUrl(part);
 
         const links = document.createElement('span');
         links.className = 'shop-links';

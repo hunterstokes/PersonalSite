@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PC Builds — Hunter Brown</title>
+  <title>PC Build Guide — Hunter Brown</title>
   <script>
     (function () {
       var t = localStorage.getItem('theme');
@@ -21,12 +21,12 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#0f1115">
-  <meta name="description" content="Custom PC builds by Hunter Brown — specs, build notes, and lessons learned from each rig.">
-  <link rel="canonical" href="https://huntersb.com/builds.html">
-  <meta property="og:title" content="PC Builds — Hunter Brown">
-  <meta property="og:description" content="Custom rigs, specs, and build notes.">
+  <meta name="description" content="Interactive PC build guide by Hunter Brown — pick a preset, customize every part, and get a parts list with prices.">
+  <link rel="canonical" href="https://huntersb.com/guide.html">
+  <meta property="og:title" content="PC Build Guide — spec out your own PC">
+  <meta property="og:description" content="Pick a preset, customize every part, and get a complete parts list with estimated prices.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://huntersb.com/builds.html">
+  <meta property="og:url" content="https://huntersb.com/guide.html">
   <meta property="og:image" content="https://huntersb.com/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
   <!--
@@ -52,7 +52,7 @@
       <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
       <ul class="nav-links" id="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="guide.html">Build Guide</a></li>
+        <li><a href="builds.html">My Builds</a></li>
         <li><a href="index.html#contact">Contact</a></li>
         <li><a href="game.html">Play</a></li>
       </ul>
@@ -70,77 +70,33 @@
 
   <main class="builds-main" id="main">
     <header class="builds-header">
-      <p class="hero-tag">Build Logs</p>
-      <h1>PC Builds<span class="accent">.</span></h1>
+      <p class="hero-tag">Interactive Guide</p>
+      <h1>Spec your own PC<span class="accent">.</span></h1>
       <p class="builds-intro">
-        Every rig here was planned, assembled, and tuned by hand. Specs, part choices, and the lessons each build taught me.
+        Start from a preset, then swap any part. Compatibility is handled for you — motherboards follow your CPU platform, and the guide flags an undersized power supply. Prices are street-price estimates and drift over time.
       </p>
-      <!--
-        FTC affiliate disclosure — required by US law when affiliate links earn
-        commissions. Keep it visible on any page with affiliate links. Amazon
-        Associates additionally requires this exact "As an Amazon Associate…"
-        sentence once you're enrolled.
-      -->
       <p class="builds-disclosure">
-        <strong>Heads up:</strong> the shop links below may be affiliate links.
+        <strong>Heads up:</strong> the shop links in the summary may be affiliate links.
         As an Amazon Associate I earn from qualifying purchases — at no extra
         cost to you.
       </p>
-      <p class="builds-intro">
-        Want one of your own? <a href="guide.html">Spec out your own PC with the interactive build guide &rarr;</a>
-      </p>
     </header>
 
-    <!--
-      PLACEHOLDER BUILDS: the specs below are sample data so the layout is ready.
-      Replace each value with your real parts and remove the "sample specs" badge
-      (<span class="build-badge">) once a card is updated.
-    -->
+    <div class="preset-bar" id="preset-bar" role="group" aria-label="Build presets"></div>
 
-    <div class="builds-grid">
+    <div class="guide-layout">
+      <form id="builder" class="builder" aria-label="Component choices"></form>
 
-      <article class="build-card">
-        <div class="build-card-top">
-          <span class="build-date">2024</span>
-          <span class="build-badge">Sample specs — update me</span>
-        </div>
-        <h2>Daily Driver</h2>
-        <p class="build-purpose">Gaming &amp; everyday workstation</p>
-        <dl class="build-specs">
-          <div><dt>CPU</dt><dd>AMD Ryzen 7 7800X3D</dd></div>
-          <div><dt>GPU</dt><dd>NVIDIA RTX 4070 Super</dd></div>
-          <div><dt>RAM</dt><dd>32 GB DDR5-6000 CL30</dd></div>
-          <div><dt>Storage</dt><dd>2 TB NVMe Gen4</dd></div>
-          <div><dt>Cooling</dt><dd>240mm AIO</dd></div>
-          <div><dt>Case</dt><dd>Mid-tower, mesh front</dd></div>
-          <div><dt>PSU</dt><dd>750W 80+ Gold</dd></div>
-        </dl>
-        <p class="build-notes">
-          Build notes go here — what you optimized for, what you'd do differently, thermals, noise, anything worth remembering.
+      <aside class="build-summary" aria-label="Your build summary">
+        <h2>Your build</h2>
+        <ul id="summary-list" class="summary-list"></ul>
+        <p class="summary-total-row">
+          <span>Estimated total</span>
+          <strong id="summary-total" aria-live="polite">$0</strong>
         </p>
-      </article>
-
-      <article class="build-card">
-        <div class="build-card-top">
-          <span class="build-date">2022</span>
-          <span class="build-badge">Sample specs — update me</span>
-        </div>
-        <h2>First Build</h2>
-        <p class="build-purpose">The one that started it all</p>
-        <dl class="build-specs">
-          <div><dt>CPU</dt><dd>AMD Ryzen 5 5600X</dd></div>
-          <div><dt>GPU</dt><dd>NVIDIA RTX 3060 Ti</dd></div>
-          <div><dt>RAM</dt><dd>16 GB DDR4-3600</dd></div>
-          <div><dt>Storage</dt><dd>1 TB NVMe Gen3</dd></div>
-          <div><dt>Cooling</dt><dd>Stock air cooler</dd></div>
-          <div><dt>Case</dt><dd>Budget ATX</dd></div>
-          <div><dt>PSU</dt><dd>650W 80+ Bronze</dd></div>
-        </dl>
-        <p class="build-notes">
-          The story of your first build — what surprised you, the mistake every first-timer makes, why it hooked you.
-        </p>
-      </article>
-
+        <p id="summary-note" class="summary-note" role="status" aria-live="polite"></p>
+        <button type="button" class="game-btn" id="copy-build">Copy build list</button>
+      </aside>
     </div>
   </main>
 
@@ -155,5 +111,6 @@
   </footer>
 
   <script src="script.js"></script>
+  <script src="guide.js"></script>
 </body>
 </html>

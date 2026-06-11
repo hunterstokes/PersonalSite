@@ -10,6 +10,7 @@ Built with vanilla HTML, CSS, and JavaScript. No frameworks, no build step.
 | `index.html` | Homepage: hero, about, experience, projects, skills, now, contact |
 | `game.html` | Field Defender — canvas arcade game (sound, difficulty modes, local leaderboard) |
 | `builds.html` | PC build logs with spec tables |
+| `guide.html` | Interactive PC configurator (`guide.js` holds the parts catalog, presets, and prices) |
 | `resume.html` | HTML resume with print/save-PDF styling (self-contained styles) |
 | `404.html` | Branded not-found page |
 
@@ -25,6 +26,10 @@ Shared assets: `style.css` (all pages except the resume), `script.js`
   three cards and the "Updated" stamp freely.
 - **PC builds** — replace the sample specs in `builds.html` with real parts and
   remove each card's `<span class="build-badge">` once updated.
+- **Build guide** — parts, prices, presets, and compatibility data all live in
+  the `CATALOG` and `PRESETS` objects at the top of `guide.js`. Prices are
+  estimates; refresh them occasionally. The guide's shop links use the same
+  affiliate config as the builds page.
 - **Contact form** — replace `YOUR_FORM_ID` in the form `action` in
   `index.html` with a [Formspree](https://formspree.io) form ID. Until then,
   submissions open the visitor's email app instead (graceful fallback).
