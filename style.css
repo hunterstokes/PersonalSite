@@ -688,6 +688,49 @@ a:hover {
   margin-bottom: 0;
 }
 
+/* ===== Now ===== */
+.now-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.now-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: border-color 0.3s;
+}
+
+.now-card:hover {
+  border-color: var(--accent);
+}
+
+.now-card h3 {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+}
+
+.now-card p {
+  font-size: 0.92rem;
+  margin-bottom: 0;
+}
+
+.now-updated {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1.25rem;
+}
+
 /* ===== Contact ===== */
 .contact-content h2 {
   font-size: clamp(2rem, 4vw, 3rem);
