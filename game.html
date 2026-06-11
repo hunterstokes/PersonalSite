@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field Defender — Hunter Brown</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Field Defender — a browser arcade game by Hunter Brown. Pilot the ship, clear the asteroid field, chase the high score.">
+</head>
+<body>
+
+  <!-- Decorative grid overlay -->
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight -->
+  <div class="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="nav-burger" id="nav-burger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="game-main">
+    <div class="game-header">
+      <h1>Field Defender<span class="accent">.</span></h1>
+      <span class="game-tagline">Clear the field. Keep the system running.</span>
+    </div>
+
+    <div class="game-hud">
+      <span>Score <strong id="hud-score">0</strong></span>
+      <span>Level <strong id="hud-level">1</strong></span>
+      <span>Ships <strong id="hud-lives">3</strong></span>
+      <span>High Score <strong id="hud-high">0</strong></span>
+    </div>
+
+    <div class="game-frame">
+      <canvas id="game-canvas"></canvas>
+      <div class="game-overlay" id="game-overlay">
+        <h2 id="overlay-title">Field Defender</h2>
+        <p id="overlay-text">Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.</p>
+        <p class="overlay-score" id="overlay-score"></p>
+        <button class="game-btn" id="overlay-btn">Start</button>
+      </div>
+    </div>
+
+    <p class="game-help">
+      <kbd>&larr;</kbd> <kbd>&rarr;</kbd> rotate &nbsp; <kbd>&uarr;</kbd> thrust &nbsp; <kbd>Space</kbd> fire &nbsp; <kbd>P</kbd> pause
+    </p>
+
+    <div class="touch-controls" aria-hidden="true">
+      <div class="touch-group">
+        <button class="touch-btn" data-action="left">&#10554;</button>
+        <button class="touch-btn" data-action="right">&#10555;</button>
+      </div>
+      <div class="touch-group">
+        <button class="touch-btn" data-action="thrust">&#9650;</button>
+        <button class="touch-btn" data-action="fire">&#9679;</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span class="nav-logo">HB<span class="accent">.</span></span>
+      <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
