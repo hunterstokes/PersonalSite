@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | Hunter Brown</title>
+  <meta name="robots" content="noindex">
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    .nf-main {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .nf-code {
+      font-family: var(--mono);
+      font-size: clamp(5rem, 18vw, 10rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -0.04em;
+    }
+
+    .nf-code .accent { color: var(--accent); }
+
+    .nf-tag {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .nf-text {
+      color: var(--text-muted);
+      max-width: 440px;
+      margin: 1.25rem 0 2rem;
+    }
+
+    .nf-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nf-btn {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.75rem;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+    }
+
+    .nf-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+
+    .nf-btn.secondary {
+      border-color: var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+
+    .nf-btn.secondary:hover {
+      border-color: var(--accent);
+      background: var(--bg-card);
+      color: var(--accent);
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <main class="nf-main" id="main">
+    <p class="nf-tag">Signal lost</p>
+    <h1 class="nf-code">4<span class="accent">0</span>4</h1>
+    <p class="nf-text">
+      This page is off the grid — it may have been moved, renamed, or never wired up in the first place. Let's get you back to a working system.
+    </p>
+    <div class="nf-actions">
+      <a href="/" class="nf-btn">Back to home</a>
+      <a href="/game.html" class="nf-btn secondary">Play a game instead</a>
+    </div>
+  </main>
+
+</body>
+</html>
