@@ -993,6 +993,129 @@ a:hover {
   height: 18px;
 }
 
+/* ===== Builds Page ===== */
+.builds-main {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 8rem 3rem 4rem;
+}
+
+.builds-header {
+  margin-bottom: 3rem;
+  max-width: 640px;
+}
+
+.builds-header h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0 1rem;
+}
+
+.builds-intro {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.builds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.build-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.build-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+
+.build-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.build-date {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.build-badge {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--orange);
+  border: 1px dashed var(--orange);
+  border-radius: 5px;
+  padding: 0.15rem 0.5rem;
+}
+
+.build-card h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.build-purpose {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.build-specs {
+  margin: 0 0 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.build-specs > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.build-specs dt {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.build-specs dd {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  text-align: right;
+}
+
+.build-notes {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .builds-main {
+    padding: 7rem 1.5rem 3rem;
+  }
+}
+
 /* ===== Game Page ===== */
 .game-main {
   position: relative;
