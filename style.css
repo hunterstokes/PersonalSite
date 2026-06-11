@@ -1040,6 +1040,110 @@ a:hover {
   font-weight: 500;
 }
 
+.mute-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+.mute-toggle:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.mute-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mute-toggle .icon-vol-off { display: none; }
+.mute-toggle.muted .icon-vol-on { display: none; }
+.mute-toggle.muted .icon-vol-off { display: block; }
+
+/* Initials entry */
+.initials-form label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.initials-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.initials-form input {
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-align: center;
+  text-transform: uppercase;
+  width: 6ch;
+  color: var(--text);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.initials-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* Leaderboard */
+.leaderboard {
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  min-width: 240px;
+  margin: 0;
+  padding: 0;
+}
+
+.leaderboard li {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.leaderboard li:first-child {
+  color: var(--accent);
+}
+
+.leaderboard .lb-initials {
+  letter-spacing: 0.15em;
+}
+
+.leaderboard .lb-score {
+  color: var(--text);
+}
+
+.leaderboard li:first-child .lb-score {
+  color: var(--accent);
+}
+
+.hidden {
+  display: none !important;
+}
+
 .game-frame {
   position: relative;
   border: 1px solid var(--border);

@@ -75,6 +75,10 @@
       <span>Level <strong id="hud-level">1</strong></span>
       <span>Ships <strong id="hud-lives">3</strong></span>
       <span>High Score <strong id="hud-high">0</strong></span>
+      <button class="mute-toggle" id="mute-toggle" aria-label="Mute sound effects" aria-pressed="false">
+        <svg class="icon-vol-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <svg class="icon-vol-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      </button>
     </div>
 
     <div class="game-frame">
@@ -83,6 +87,14 @@
         <h2 id="overlay-title">Field Defender</h2>
         <p id="overlay-text">Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.</p>
         <p class="overlay-score" id="overlay-score"></p>
+        <form class="initials-form hidden" id="initials-form">
+          <label for="initials-input">New top score! Enter your initials</label>
+          <div class="initials-row">
+            <input type="text" id="initials-input" maxlength="3" pattern="[A-Za-z0-9]{1,3}" autocomplete="off" spellcheck="false" required>
+            <button type="submit" class="game-btn">Save</button>
+          </div>
+        </form>
+        <ol class="leaderboard hidden" id="leaderboard" aria-label="Top five scores"></ol>
         <button class="game-btn" id="overlay-btn">Start</button>
       </div>
     </div>
