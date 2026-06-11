@@ -121,6 +121,52 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ===== Contact form =====
+  const form = document.getElementById('contact-form');
+  if (form) {
+    const status = document.getElementById('form-status');
+    const submitBtn = form.querySelector('.form-submit');
+    const hasEndpoint = !form.action.includes('YOUR_FORM_ID');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      if (!hasEndpoint) {
+        // No form service configured yet — hand off to the visitor's email app
+        const subject = encodeURIComponent(`Website message from ${data.get('name')}`);
+        const body = encodeURIComponent(`${data.get('message')}\n\n— ${data.get('name')} (${data.get('email')})`);
+        window.location.href = `mailto:hunterstokes@me.com?subject=${subject}&body=${body}`;
+        status.textContent = 'Opening your email app to send the message…';
+        status.className = 'form-status success';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      status.textContent = 'Sending…';
+      status.className = 'form-status';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          status.textContent = "Message sent — thanks! I'll get back to you soon.";
+          status.className = 'form-status success';
+          form.reset();
+        } else {
+          throw new Error('Request failed');
+        }
+      } catch (err) {
+        status.textContent = 'Something went wrong. Please email me directly at hunterstokes@me.com.';
+        status.className = 'form-status error';
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
   // ===== Hero subtitle typewriter =====
   const typeTarget = document.getElementById('type-text');
   if (typeTarget && !reducedMotion) {

@@ -18,13 +18,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Hunter Brown — Field Service Engineer at Illumina, based in Oakland, CA.">
+  <link rel="canonical" href="https://huntersb.com/">
   <meta property="og:title" content="Hunter Brown — Field Service Engineer">
   <meta property="og:description" content="Field Service Engineer at Illumina. Where hardware meets software.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://huntersb.com">
-  <meta name="description" content="Hunter Brown — Field Service Engineer at Illumina, based in Oakland, CA.">
+  <meta property="og:url" content="https://huntersb.com/">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Hunter Brown — Field Service Engineer. Where hardware meets software.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hunter Brown — Field Service Engineer">
+  <meta name="twitter:description" content="Field Service Engineer at Illumina. Where hardware meets software.">
+  <meta name="twitter:image" content="https://huntersb.com/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://huntersb.com/#person",
+        "name": "Hunter Brown",
+        "jobTitle": "Field Service Engineer",
+        "worksFor": { "@type": "Organization", "name": "Illumina" },
+        "email": "mailto:hunterstokes@me.com",
+        "telephone": "+1-760-224-0384",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Oakland",
+          "addressRegion": "CA",
+          "addressCountry": "US"
+        },
+        "url": "https://huntersb.com/",
+        "sameAs": [
+          "https://github.com/hunterstokes/",
+          "https://www.linkedin.com/in/huntersbrown/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://huntersb.com/#website",
+        "url": "https://huntersb.com/",
+        "name": "Hunter Brown — Field Service Engineer",
+        "publisher": { "@id": "https://huntersb.com/#person" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Decorative grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
@@ -36,13 +81,14 @@
   <div class="scroll-progress" aria-hidden="true"></div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <div class="nav-logo">HB<span class="accent">.</span></div>
       <ul class="nav-links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="game.html">Play</a></li>
       </ul>
@@ -74,15 +120,17 @@
     </div>
   </header>
 
+  <main id="main">
+
   <!-- About -->
-  <section class="section" id="about">
+  <section class="section" id="about" aria-labelledby="about-heading">
     <div class="section-label">
       <span class="label-number">01</span>
       <span class="label-text">About</span>
       <span class="label-line"></span>
     </div>
     <div class="section-content">
-      <h2>The intersection of <span class="accent">hardware</span> &amp; <span class="accent">software</span> is where I thrive.</h2>
+      <h2 id="about-heading">The intersection of <span class="accent">hardware</span> &amp; <span class="accent">software</span> is where I thrive.</h2>
       <p>
         I'm a Field Service Engineer at <strong>Illumina</strong>, working at the crossroads of complex instrumentation and the software that drives it. There's nothing more satisfying than diagnosing a system where mechanical precision and code have to work in perfect sync — and making it run.
       </p>
@@ -103,6 +151,7 @@
       <span class="label-line"></span>
     </div>
     <div class="section-content">
+      <h2 class="visually-hidden">Work experience</h2>
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-marker"></div>
@@ -152,6 +201,7 @@
       <span class="label-line"></span>
     </div>
     <div class="section-content">
+      <h2 class="visually-hidden">Projects and links</h2>
       <div class="projects-grid">
 
         <a href="https://freightrecon.com" target="_blank" rel="noopener" class="project-card">
@@ -212,10 +262,68 @@
     </div>
   </section>
 
+  <!-- Skills & Training -->
+  <section class="section" id="skills">
+    <div class="section-label">
+      <span class="label-number">04</span>
+      <span class="label-text">Skills &amp; Training</span>
+      <span class="label-line"></span>
+    </div>
+    <div class="section-content">
+      <h2 class="visually-hidden">Skills and training</h2>
+      <div class="skills-groups">
+        <div class="skills-group">
+          <h3>Instrumentation &amp; Hardware</h3>
+          <ul class="skills-tags">
+            <li>Hardware Diagnostics</li>
+            <li>Instrumentation</li>
+            <li>Fluidics Systems</li>
+            <li>Electrical Systems</li>
+            <li>Preventive Maintenance</li>
+            <li>PC Building</li>
+          </ul>
+        </div>
+        <div class="skills-group">
+          <h3>Software &amp; Systems</h3>
+          <ul class="skills-tags">
+            <li>Software Troubleshooting</li>
+            <li>JavaScript</li>
+            <li>SQL</li>
+            <li>Linux</li>
+            <li>Networking</li>
+            <li>Git / GitHub</li>
+          </ul>
+        </div>
+        <div class="skills-group">
+          <h3>Professional</h3>
+          <ul class="skills-tags">
+            <li>Complex Problem Solving</li>
+            <li>Customer Relationships</li>
+            <li>Clear Communication</li>
+            <li>Documentation</li>
+            <li>Attention to Detail</li>
+          </ul>
+        </div>
+      </div>
+      <div class="training-grid">
+        <div class="training-card">
+          <span class="training-date">2018</span>
+          <h3>LEARN Academy</h3>
+          <p>Full-stack web development — JavaScript, React, Ruby on Rails, PostgreSQL.</p>
+        </div>
+        <div class="training-card">
+          <span class="training-date">2014 — 2017</span>
+          <h3>University of Oregon</h3>
+          <p>Statistics, Economics, Mathematics, Business Administration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section class="section" id="contact">
     <div class="section-label">
-      <span class="label-number">04</span>
+      <span class="label-number">05</span>
       <span class="label-text">Contact</span>
       <span class="label-line"></span>
     </div>
@@ -239,8 +347,35 @@
           <span>Oakland, California</span>
         </div>
       </div>
+
+      <!--
+        Contact form: replace YOUR_FORM_ID in the action below with your
+        Formspree form ID (https://formspree.io) to enable direct sending.
+        Until then, submissions open the visitor's email app instead.
+      -->
+      <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <h3 class="contact-form-title">Send a message</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </section>
+
+  </main>
 
   <!-- Footer -->
   <footer class="footer">

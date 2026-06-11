@@ -19,8 +19,20 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta name="description" content="Field Defender — a browser arcade game by Hunter Brown. Pilot the ship, clear the asteroid field, chase the high score.">
+  <link rel="canonical" href="https://huntersb.com/game.html">
+  <meta property="og:title" content="Field Defender — a browser arcade game">
+  <meta property="og:description" content="Pilot the ship, clear the asteroid field, chase the high score. Built in vanilla JavaScript by Hunter Brown.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://huntersb.com/game.html">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Field Defender — a browser arcade game">
+  <meta name="twitter:description" content="Pilot the ship, clear the asteroid field, chase the high score. Built in vanilla JavaScript by Hunter Brown.">
+  <meta name="twitter:image" content="https://huntersb.com/og-image.png">
 </head>
 <body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Decorative grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
@@ -29,7 +41,7 @@
   <div class="cursor-spotlight" aria-hidden="true"></div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
       <ul class="nav-links" id="nav-links">
@@ -49,7 +61,7 @@
     </div>
   </nav>
 
-  <main class="game-main">
+  <main class="game-main" id="main">
     <div class="game-header">
       <h1>Field Defender<span class="accent">.</span></h1>
       <span class="game-tagline">Clear the field. Keep the system running.</span>
@@ -63,7 +75,7 @@
     </div>
 
     <div class="game-frame">
-      <canvas id="game-canvas"></canvas>
+      <canvas id="game-canvas" role="img" aria-label="Field Defender game area: an arcade space field with your ship, bullets, and drifting asteroids"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h2 id="overlay-title">Field Defender</h2>
         <p id="overlay-text">Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.</p>
@@ -76,14 +88,14 @@
       <kbd>&larr;</kbd> <kbd>&rarr;</kbd> rotate &nbsp; <kbd>&uarr;</kbd> thrust &nbsp; <kbd>Space</kbd> fire &nbsp; <kbd>P</kbd> pause
     </p>
 
-    <div class="touch-controls" aria-hidden="true">
+    <div class="touch-controls" role="group" aria-label="Touch game controls">
       <div class="touch-group">
-        <button class="touch-btn" data-action="left">&#10554;</button>
-        <button class="touch-btn" data-action="right">&#10555;</button>
+        <button class="touch-btn" data-action="left" aria-label="Rotate left">&#10554;</button>
+        <button class="touch-btn" data-action="right" aria-label="Rotate right">&#10555;</button>
       </div>
       <div class="touch-group">
-        <button class="touch-btn" data-action="thrust">&#9650;</button>
-        <button class="touch-btn" data-action="fire">&#9679;</button>
+        <button class="touch-btn" data-action="thrust" aria-label="Thrust">&#9650;</button>
+        <button class="touch-btn" data-action="fire" aria-label="Fire">&#9679;</button>
       </div>
     </div>
   </main>
