@@ -13,18 +13,72 @@
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0f1115">
+  <meta name="description" content="Hunter Brown — Field Service Engineer at Illumina, based in Oakland, CA.">
+  <link rel="canonical" href="https://huntersb.com/">
   <meta property="og:title" content="Hunter Brown — Field Service Engineer">
   <meta property="og:description" content="Field Service Engineer at Illumina. Where hardware meets software.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://huntersb.com">
-  <meta name="description" content="Hunter Brown — Field Service Engineer at Illumina, based in Oakland, CA.">
+  <meta property="og:url" content="https://huntersb.com/">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Hunter Brown — Field Service Engineer. Where hardware meets software.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hunter Brown — Field Service Engineer">
+  <meta name="twitter:description" content="Field Service Engineer at Illumina. Where hardware meets software.">
+  <meta name="twitter:image" content="https://huntersb.com/og-image.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://huntersb.com/#person",
+        "name": "Hunter Brown",
+        "jobTitle": "Field Service Engineer",
+        "worksFor": { "@type": "Organization", "name": "Illumina" },
+        "email": "mailto:hunterstokes@me.com",
+        "telephone": "+1-760-224-0384",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Oakland",
+          "addressRegion": "CA",
+          "addressCountry": "US"
+        },
+        "url": "https://huntersb.com/",
+        "sameAs": [
+          "https://github.com/hunterstokes/",
+          "https://www.linkedin.com/in/huntersbrown/"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://huntersb.com/#website",
+        "url": "https://huntersb.com/",
+        "name": "Hunter Brown — Field Service Engineer",
+        "publisher": { "@id": "https://huntersb.com/#person" }
+      }
+    ]
+  }
+  </script>
+  <!--
+    Privacy-friendly analytics (GoatCounter — no cookies, no consent banner needed):
+    1. Create a free account at https://www.goatcounter.com
+    2. Replace MYCODE with your site code and uncomment the line below (on every page).
+  <script data-goatcounter="https://MYCODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  -->
 </head>
 <body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Decorative grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
@@ -36,13 +90,14 @@
   <div class="scroll-progress" aria-hidden="true"></div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <div class="nav-logo">HB<span class="accent">.</span></div>
       <ul class="nav-links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
         <li><a href="#contact">Contact</a></li>
         <li><a href="game.html">Play</a></li>
       </ul>
@@ -74,15 +129,17 @@
     </div>
   </header>
 
+  <main id="main">
+
   <!-- About -->
-  <section class="section" id="about">
+  <section class="section" id="about" aria-labelledby="about-heading">
     <div class="section-label">
       <span class="label-number">01</span>
       <span class="label-text">About</span>
       <span class="label-line"></span>
     </div>
     <div class="section-content">
-      <h2>The intersection of <span class="accent">hardware</span> &amp; <span class="accent">software</span> is where I thrive.</h2>
+      <h2 id="about-heading">The intersection of <span class="accent">hardware</span> &amp; <span class="accent">software</span> is where I thrive.</h2>
       <p>
         I'm a Field Service Engineer at <strong>Illumina</strong>, working at the crossroads of complex instrumentation and the software that drives it. There's nothing more satisfying than diagnosing a system where mechanical precision and code have to work in perfect sync — and making it run.
       </p>
@@ -103,6 +160,7 @@
       <span class="label-line"></span>
     </div>
     <div class="section-content">
+      <h2 class="visually-hidden">Work experience</h2>
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-marker"></div>
@@ -152,6 +210,7 @@
       <span class="label-line"></span>
     </div>
     <div class="section-content">
+      <h2 class="visually-hidden">Projects and links</h2>
       <div class="projects-grid">
 
         <a href="https://freightrecon.com" target="_blank" rel="noopener" class="project-card">
@@ -172,13 +231,13 @@
           <span class="project-link">Play now &rarr;</span>
         </a>
 
-        <a href="#" class="project-card">
+        <a href="builds.html" class="project-card">
           <div class="project-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
           </div>
           <h3>PC Builds</h3>
           <p>Custom rigs, benchmarks, and build logs.</p>
-          <span class="project-link">Coming soon &rarr;</span>
+          <span class="project-link">View builds &rarr;</span>
         </a>
 
         <a href="https://github.com/hunterstokes/" target="_blank" rel="noopener" class="project-card">
@@ -212,10 +271,96 @@
     </div>
   </section>
 
+  <!-- Skills & Training -->
+  <section class="section" id="skills">
+    <div class="section-label">
+      <span class="label-number">04</span>
+      <span class="label-text">Skills &amp; Training</span>
+      <span class="label-line"></span>
+    </div>
+    <div class="section-content">
+      <h2 class="visually-hidden">Skills and training</h2>
+      <div class="skills-groups">
+        <div class="skills-group">
+          <h3>Instrumentation &amp; Hardware</h3>
+          <ul class="skills-tags">
+            <li>Hardware Diagnostics</li>
+            <li>Instrumentation</li>
+            <li>Fluidics Systems</li>
+            <li>Electrical Systems</li>
+            <li>Preventive Maintenance</li>
+            <li>PC Building</li>
+          </ul>
+        </div>
+        <div class="skills-group">
+          <h3>Software &amp; Systems</h3>
+          <ul class="skills-tags">
+            <li>Software Troubleshooting</li>
+            <li>JavaScript</li>
+            <li>SQL</li>
+            <li>Linux</li>
+            <li>Networking</li>
+            <li>Git / GitHub</li>
+          </ul>
+        </div>
+        <div class="skills-group">
+          <h3>Professional</h3>
+          <ul class="skills-tags">
+            <li>Complex Problem Solving</li>
+            <li>Customer Relationships</li>
+            <li>Clear Communication</li>
+            <li>Documentation</li>
+            <li>Attention to Detail</li>
+          </ul>
+        </div>
+      </div>
+      <div class="training-grid">
+        <div class="training-card">
+          <span class="training-date">2018</span>
+          <h3>LEARN Academy</h3>
+          <p>Full-stack web development — JavaScript, React, Ruby on Rails, PostgreSQL.</p>
+        </div>
+        <div class="training-card">
+          <span class="training-date">2014 — 2017</span>
+          <h3>University of Oregon</h3>
+          <p>Statistics, Economics, Mathematics, Business Administration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Now -->
+  <section class="section" id="now">
+    <div class="section-label">
+      <span class="label-number">05</span>
+      <span class="label-text">Now</span>
+      <span class="label-line"></span>
+    </div>
+    <div class="section-content">
+      <h2 class="visually-hidden">What I'm up to now</h2>
+      <!-- Update this section freely — it's meant to stay current. -->
+      <div class="now-grid">
+        <div class="now-card">
+          <h3>Learning</h3>
+          <p>Going deeper on genomic sequencing platforms — fluidics, optics, and the software that orchestrates them.</p>
+        </div>
+        <div class="now-card">
+          <h3>Building</h3>
+          <p>This site (vanilla HTML/CSS/JS), <a href="game.html">Field Defender</a>, and planning the next PC build.</p>
+        </div>
+        <div class="now-card">
+          <h3>Off the clock</h3>
+          <p>Surfing, fishing, and cooking something worth eating.</p>
+        </div>
+      </div>
+      <p class="now-updated">Updated June 2026</p>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section class="section" id="contact">
     <div class="section-label">
-      <span class="label-number">04</span>
+      <span class="label-number">06</span>
       <span class="label-text">Contact</span>
       <span class="label-line"></span>
     </div>
@@ -239,14 +384,76 @@
           <span>Oakland, California</span>
         </div>
       </div>
+
+      <!--
+        Contact form: replace YOUR_FORM_ID in the action below with your
+        Formspree form ID (https://formspree.io) to enable direct sending.
+        Until then, submissions open the visitor's email app instead.
+      -->
+      <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <h3 class="contact-form-title">Send a message</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </section>
+
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
-      <span class="nav-logo">HB<span class="accent">.</span></span>
-      <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="nav-logo">HB<span class="accent">.</span></span>
+          <p class="footer-tagline">Field Service Engineer at Illumina, working where hardware meets software.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <h3>Explore</h3>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#now">Now</a></li>
+            <li><a href="builds.html">PC Builds</a></li>
+            <li><a href="game.html">Field Defender</a></li>
+            <li><a href="resume.html">Resume</a></li>
+          </ul>
+        </nav>
+        <div class="footer-social">
+          <h3>Connect</h3>
+          <div class="footer-social-links">
+            <a href="https://github.com/hunterstokes/" target="_blank" rel="noopener" aria-label="GitHub profile">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.69-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.16 1.18a11 11 0 0 1 5.76 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14 0 1.54-.01 2.79-.01 3.17 0 .31.21.67.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/huntersbrown/" target="_blank" rel="noopener" aria-label="LinkedIn profile">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+            </a>
+            <a href="mailto:hunterstokes@me.com" aria-label="Send an email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+        <span class="footer-built">Built with vanilla HTML / CSS / JS</span>
+      </div>
     </div>
   </footer>
 

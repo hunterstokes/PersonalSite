@@ -13,14 +13,35 @@
       document.documentElement.setAttribute('data-theme', t);
     })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0f1115">
   <meta name="description" content="Field Defender — a browser arcade game by Hunter Brown. Pilot the ship, clear the asteroid field, chase the high score.">
+  <link rel="canonical" href="https://huntersb.com/game.html">
+  <meta property="og:title" content="Field Defender — a browser arcade game">
+  <meta property="og:description" content="Pilot the ship, clear the asteroid field, chase the high score. Built in vanilla JavaScript by Hunter Brown.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://huntersb.com/game.html">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Field Defender — a browser arcade game">
+  <meta name="twitter:description" content="Pilot the ship, clear the asteroid field, chase the high score. Built in vanilla JavaScript by Hunter Brown.">
+  <meta name="twitter:image" content="https://huntersb.com/og-image.png">
+  <!--
+    Privacy-friendly analytics (GoatCounter — no cookies, no consent banner needed):
+    1. Create a free account at https://www.goatcounter.com
+    2. Replace MYCODE with your site code and uncomment the line below (on every page).
+  <script data-goatcounter="https://MYCODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  -->
 </head>
 <body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- Decorative grid overlay -->
   <div class="grid-overlay" aria-hidden="true"></div>
@@ -29,7 +50,7 @@
   <div class="cursor-spotlight" aria-hidden="true"></div>
 
   <!-- Navigation -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
       <ul class="nav-links" id="nav-links">
@@ -49,7 +70,7 @@
     </div>
   </nav>
 
-  <main class="game-main">
+  <main class="game-main" id="main">
     <div class="game-header">
       <h1>Field Defender<span class="accent">.</span></h1>
       <span class="game-tagline">Clear the field. Keep the system running.</span>
@@ -60,14 +81,37 @@
       <span>Level <strong id="hud-level">1</strong></span>
       <span>Ships <strong id="hud-lives">3</strong></span>
       <span>High Score <strong id="hud-high">0</strong></span>
+      <button class="mute-toggle" id="mute-toggle" aria-label="Mute sound effects" aria-pressed="false">
+        <svg class="icon-vol-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        <svg class="icon-vol-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      </button>
     </div>
 
     <div class="game-frame">
-      <canvas id="game-canvas"></canvas>
+      <canvas id="game-canvas" role="img" aria-label="Field Defender game area: an arcade space field with your ship, bullets, and drifting asteroids"></canvas>
       <div class="game-overlay" id="game-overlay">
         <h2 id="overlay-title">Field Defender</h2>
         <p id="overlay-text">Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.</p>
         <p class="overlay-score" id="overlay-score"></p>
+        <fieldset class="difficulty" id="difficulty-picker">
+          <legend>Difficulty</legend>
+          <div class="difficulty-options">
+            <input type="radio" name="difficulty" id="diff-easy" value="easy">
+            <label for="diff-easy">Easy</label>
+            <input type="radio" name="difficulty" id="diff-normal" value="normal" checked>
+            <label for="diff-normal">Normal</label>
+            <input type="radio" name="difficulty" id="diff-hard" value="hard">
+            <label for="diff-hard">Hard</label>
+          </div>
+        </fieldset>
+        <form class="initials-form hidden" id="initials-form">
+          <label for="initials-input">New top score! Enter your initials</label>
+          <div class="initials-row">
+            <input type="text" id="initials-input" maxlength="3" pattern="[A-Za-z0-9]{1,3}" autocomplete="off" spellcheck="false" required>
+            <button type="submit" class="game-btn">Save</button>
+          </div>
+        </form>
+        <ol class="leaderboard hidden" id="leaderboard" aria-label="Top five scores"></ol>
         <button class="game-btn" id="overlay-btn">Start</button>
       </div>
     </div>
@@ -76,14 +120,14 @@
       <kbd>&larr;</kbd> <kbd>&rarr;</kbd> rotate &nbsp; <kbd>&uarr;</kbd> thrust &nbsp; <kbd>Space</kbd> fire &nbsp; <kbd>P</kbd> pause
     </p>
 
-    <div class="touch-controls" aria-hidden="true">
+    <div class="touch-controls" role="group" aria-label="Touch game controls">
       <div class="touch-group">
-        <button class="touch-btn" data-action="left">&#10554;</button>
-        <button class="touch-btn" data-action="right">&#10555;</button>
+        <button class="touch-btn" data-action="left" aria-label="Rotate left">&#10554;</button>
+        <button class="touch-btn" data-action="right" aria-label="Rotate right">&#10555;</button>
       </div>
       <div class="touch-group">
-        <button class="touch-btn" data-action="thrust">&#9650;</button>
-        <button class="touch-btn" data-action="fire">&#9679;</button>
+        <button class="touch-btn" data-action="thrust" aria-label="Thrust">&#9650;</button>
+        <button class="touch-btn" data-action="fire" aria-label="Fire">&#9679;</button>
       </div>
     </div>
   </main>
@@ -91,8 +135,10 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
-      <span class="nav-logo">HB<span class="accent">.</span></span>
-      <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+        <span class="footer-built">Built with vanilla HTML / CSS / JS</span>
+      </div>
     </div>
   </footer>
 

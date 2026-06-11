@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PC Builds — Hunter Brown</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="theme-color" content="#0f1115">
+  <meta name="description" content="Custom PC builds by Hunter Brown — specs, build notes, and lessons learned from each rig.">
+  <link rel="canonical" href="https://huntersb.com/builds.html">
+  <meta property="og:title" content="PC Builds — Hunter Brown">
+  <meta property="og:description" content="Custom rigs, specs, and build notes.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://huntersb.com/builds.html">
+  <meta property="og:image" content="https://huntersb.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!--
+    Privacy-friendly analytics (GoatCounter — no cookies, no consent banner needed):
+    1. Create a free account at https://www.goatcounter.com
+    2. Replace MYCODE with your site code and uncomment the line below (on every page).
+  <script data-goatcounter="https://MYCODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+  -->
+</head>
+<body>
+
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- Decorative grid overlay -->
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- Cursor spotlight -->
+  <div class="cursor-spotlight" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" style="color: inherit;">HB<span class="accent">.</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="game.html">Play</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <button class="nav-burger" id="nav-burger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="builds-main" id="main">
+    <header class="builds-header">
+      <p class="hero-tag">Build Logs</p>
+      <h1>PC Builds<span class="accent">.</span></h1>
+      <p class="builds-intro">
+        Every rig here was planned, assembled, and tuned by hand. Specs, part choices, and the lessons each build taught me.
+      </p>
+    </header>
+
+    <!--
+      PLACEHOLDER BUILDS: the specs below are sample data so the layout is ready.
+      Replace each value with your real parts and remove the "sample specs" badge
+      (<span class="build-badge">) once a card is updated.
+    -->
+
+    <div class="builds-grid">
+
+      <article class="build-card">
+        <div class="build-card-top">
+          <span class="build-date">2024</span>
+          <span class="build-badge">Sample specs — update me</span>
+        </div>
+        <h2>Daily Driver</h2>
+        <p class="build-purpose">Gaming &amp; everyday workstation</p>
+        <dl class="build-specs">
+          <div><dt>CPU</dt><dd>AMD Ryzen 7 7800X3D</dd></div>
+          <div><dt>GPU</dt><dd>NVIDIA RTX 4070 Super</dd></div>
+          <div><dt>RAM</dt><dd>32 GB DDR5-6000 CL30</dd></div>
+          <div><dt>Storage</dt><dd>2 TB NVMe Gen4</dd></div>
+          <div><dt>Cooling</dt><dd>240mm AIO</dd></div>
+          <div><dt>Case</dt><dd>Mid-tower, mesh front</dd></div>
+          <div><dt>PSU</dt><dd>750W 80+ Gold</dd></div>
+        </dl>
+        <p class="build-notes">
+          Build notes go here — what you optimized for, what you'd do differently, thermals, noise, anything worth remembering.
+        </p>
+      </article>
+
+      <article class="build-card">
+        <div class="build-card-top">
+          <span class="build-date">2022</span>
+          <span class="build-badge">Sample specs — update me</span>
+        </div>
+        <h2>First Build</h2>
+        <p class="build-purpose">The one that started it all</p>
+        <dl class="build-specs">
+          <div><dt>CPU</dt><dd>AMD Ryzen 5 5600X</dd></div>
+          <div><dt>GPU</dt><dd>NVIDIA RTX 3060 Ti</dd></div>
+          <div><dt>RAM</dt><dd>16 GB DDR4-3600</dd></div>
+          <div><dt>Storage</dt><dd>1 TB NVMe Gen3</dd></div>
+          <div><dt>Cooling</dt><dd>Stock air cooler</dd></div>
+          <div><dt>Case</dt><dd>Budget ATX</dd></div>
+          <div><dt>PSU</dt><dd>650W 80+ Bronze</dd></div>
+        </dl>
+        <p class="build-notes">
+          The story of your first build — what surprised you, the mistake every first-timer makes, why it hooked you.
+        </p>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2026 Hunter Brown</span>
+        <span class="footer-built">Built with vanilla HTML / CSS / JS</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

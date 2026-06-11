@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hunter Brown — Resume</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" href="fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     *, *::before, *::after {
@@ -228,13 +227,60 @@
       font-size: 0.75rem;
     }
 
+    /* === Print button (screen only) === */
+    .print-bar {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .print-btn,
+    .back-link {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.55rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.25s, color 0.25s;
+    }
+
+    .print-btn:hover,
+    .back-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
     /* === Print === */
     @media print {
+      @page {
+        margin: 1.4cm;
+      }
       html { font-size: 13px; }
       body {
         background: #fff;
         color: #1a1a1a;
         padding: 0;
+      }
+      .print-bar { display: none; }
+      .entry,
+      .sidebar-item,
+      .resume-section {
+        break-inside: avoid;
+      }
+      a {
+        color: #2a6cb8;
       }
       .resume { max-width: 100%; }
       .resume-header { border-bottom-color: #1a1a1a; }
@@ -256,6 +302,9 @@
 
     /* === Responsive === */
     @media (max-width: 650px) {
+      body {
+        padding-top: 4.5rem;
+      }
       .resume-body {
         grid-template-columns: 1fr;
       }
@@ -276,6 +325,12 @@
   </style>
 </head>
 <body>
+
+  <div class="print-bar">
+    <a href="index.html" class="back-link">&larr; Back to site</a>
+    <button type="button" class="print-btn" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
   <div class="resume">
 
     <!-- Header -->

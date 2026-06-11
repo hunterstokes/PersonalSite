@@ -16,8 +16,178 @@
   const overlayText = document.getElementById('overlay-text');
   const overlayScore = document.getElementById('overlay-score');
   const overlayBtn = document.getElementById('overlay-btn');
+  const initialsForm = document.getElementById('initials-form');
+  const initialsInput = document.getElementById('initials-input');
+  const leaderboardEl = document.getElementById('leaderboard');
+  const muteToggle = document.getElementById('mute-toggle');
 
   const HIGH_KEY = 'hb-field-defender-high';
+  const SCORES_KEY = 'hb-field-defender-scores';
+  const MUTE_KEY = 'hb-field-defender-muted';
+  const DIFF_KEY = 'hb-field-defender-difficulty';
+
+  // ===== Difficulty =====
+  const DIFFICULTIES = {
+    easy:   { speed: 0.75, startAsteroids: 2, lives: 4, tag: 'E' },
+    normal: { speed: 1.0,  startAsteroids: 3, lives: 3, tag: 'N' },
+    hard:   { speed: 1.3,  startAsteroids: 4, lives: 3, tag: 'H' }
+  };
+  let difficultyName = localStorage.getItem(DIFF_KEY);
+  if (!DIFFICULTIES[difficultyName]) difficultyName = 'normal';
+  let diff = DIFFICULTIES[difficultyName];
+
+  const diffPicker = document.getElementById('difficulty-picker');
+  const diffRadio = document.getElementById('diff-' + difficultyName);
+  if (diffRadio) diffRadio.checked = true;
+  diffPicker.addEventListener('change', (e) => {
+    if (DIFFICULTIES[e.target.value]) {
+      difficultyName = e.target.value;
+      diff = DIFFICULTIES[difficultyName];
+      localStorage.setItem(DIFF_KEY, difficultyName);
+    }
+  });
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== Sound (Web Audio, no files) =====
+  const sound = (() => {
+    let ctx = null;
+    let muted = localStorage.getItem(MUTE_KEY) === '1';
+    let thrustNode = null;
+
+    function ensure() {
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+
+    function blip(type, from, to, dur, vol) {
+      if (muted) return;
+      const c = ensure();
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(from, c.currentTime);
+      o.frequency.exponentialRampToValueAtTime(Math.max(to, 1), c.currentTime + dur);
+      g.gain.setValueAtTime(vol, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+      o.connect(g).connect(c.destination);
+      o.start();
+      o.stop(c.currentTime + dur);
+    }
+
+    function noise(dur, vol, cutoff) {
+      if (muted) return;
+      const c = ensure();
+      const len = Math.floor(c.sampleRate * dur);
+      const buf = c.createBuffer(1, len, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      const src = c.createBufferSource();
+      src.buffer = buf;
+      const f = c.createBiquadFilter();
+      f.type = 'lowpass';
+      f.frequency.value = cutoff;
+      const g = c.createGain();
+      g.gain.value = vol;
+      src.connect(f).connect(g).connect(c.destination);
+      src.start();
+    }
+
+    return {
+      fire() { blip('square', 900, 280, 0.09, 0.1); },
+      explode(size) { noise(0.2 + size * 0.1, 0.2, 500 + (4 - size) * 350); },
+      shipHit() {
+        noise(0.6, 0.28, 380);
+        blip('sawtooth', 280, 50, 0.55, 0.18);
+      },
+      levelUp() {
+        blip('triangle', 440, 880, 0.13, 0.14);
+        setTimeout(() => blip('triangle', 660, 1320, 0.16, 0.14), 120);
+      },
+      thrust(on) {
+        if (on && !muted && !thrustNode) {
+          const c = ensure();
+          const buf = c.createBuffer(1, c.sampleRate, c.sampleRate);
+          const data = buf.getChannelData(0);
+          for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+          const src = c.createBufferSource();
+          src.buffer = buf;
+          src.loop = true;
+          const f = c.createBiquadFilter();
+          f.type = 'lowpass';
+          f.frequency.value = 320;
+          const g = c.createGain();
+          g.gain.value = 0.07;
+          src.connect(f).connect(g).connect(c.destination);
+          src.start();
+          thrustNode = src;
+        } else if ((!on || muted) && thrustNode) {
+          thrustNode.stop();
+          thrustNode = null;
+        }
+      },
+      toggleMute() {
+        muted = !muted;
+        localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+        if (muted) this.thrust(false);
+        return muted;
+      },
+      get muted() { return muted; }
+    };
+  })();
+
+  if (muteToggle) {
+    const renderMute = (m) => {
+      muteToggle.classList.toggle('muted', m);
+      muteToggle.setAttribute('aria-pressed', String(m));
+      muteToggle.setAttribute('aria-label', m ? 'Unmute sound effects' : 'Mute sound effects');
+    };
+    renderMute(sound.muted);
+    muteToggle.addEventListener('click', () => renderMute(sound.toggleMute()));
+  }
+
+  // ===== Leaderboard =====
+  function loadScores() {
+    try {
+      const s = JSON.parse(localStorage.getItem(SCORES_KEY));
+      return Array.isArray(s) ? s : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function qualifies(s) {
+    const scores = loadScores();
+    return s > 0 && (scores.length < 5 || s > scores[scores.length - 1].score);
+  }
+
+  function saveScore(initials, s) {
+    const scores = loadScores();
+    scores.push({ initials, score: s, tag: diff.tag });
+    scores.sort((a, b) => b.score - a.score);
+    localStorage.setItem(SCORES_KEY, JSON.stringify(scores.slice(0, 5)));
+  }
+
+  function renderLeaderboard() {
+    const scores = loadScores();
+    if (scores.length === 0) {
+      leaderboardEl.classList.add('hidden');
+      return;
+    }
+    leaderboardEl.innerHTML = '';
+    scores.forEach((entry) => {
+      const li = document.createElement('li');
+      const initials = document.createElement('span');
+      initials.className = 'lb-initials';
+      initials.textContent = entry.initials + (entry.tag ? ' · ' + entry.tag : '');
+      const scoreSpan = document.createElement('span');
+      scoreSpan.className = 'lb-score';
+      scoreSpan.textContent = entry.score;
+      li.append(initials, scoreSpan);
+      leaderboardEl.appendChild(li);
+    });
+    leaderboardEl.classList.remove('hidden');
+  }
 
   let colors = { accent: '#4a9eff', text: '#e0e2e8', muted: '#8a8f9d', orange: '#f0913a' };
   function readColors() {
@@ -51,6 +221,7 @@
   };
 
   window.addEventListener('keydown', (e) => {
+    if (e.target.closest('input, textarea')) return;
     if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
       if (state === 'playing') setState('paused');
       else if (state === 'paused') setState('playing');
@@ -62,7 +233,10 @@
       if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         e.preventDefault();
       }
-      if (state === 'menu' || state === 'gameover') startGame();
+      // Don't restart from game over while the initials form is up
+      if (state === 'menu' || (state === 'gameover' && initialsForm.classList.contains('hidden'))) {
+        startGame();
+      }
     }
   });
 
@@ -92,35 +266,57 @@
   let highScore = parseInt(localStorage.getItem(HIGH_KEY), 10) || 0;
   let fireCooldown = 0;
   let lastTime = 0;
+  let shake = 0;
 
   hudHigh.textContent = highScore;
 
   function setState(next) {
     state = next;
+    if (next !== 'playing') sound.thrust(false);
     if (next === 'playing') {
       overlay.classList.add('hidden');
     } else {
       overlay.classList.remove('hidden');
       overlayScore.textContent = '';
+      initialsForm.classList.add('hidden');
+      leaderboardEl.classList.add('hidden');
+      diffPicker.classList.toggle('hidden', next !== 'menu');
       if (next === 'menu') {
         overlayTitle.textContent = 'Field Defender';
         overlayText.textContent = "Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.";
         overlayBtn.textContent = 'Start';
+        renderLeaderboard();
       } else if (next === 'paused') {
         overlayTitle.textContent = 'Paused';
         overlayText.textContent = 'The field will wait. Press P or the button to resume.';
         overlayBtn.textContent = 'Resume';
       } else if (next === 'gameover') {
-        const isRecord = score > 0 && score >= highScore;
         overlayTitle.textContent = 'System Down';
-        overlayText.textContent = isRecord
-          ? 'New high score — the field has never been cleaner.'
-          : 'The debris won this round. Recalibrate and try again.';
         overlayScore.textContent = `Final score: ${score}`;
         overlayBtn.textContent = 'Play Again';
+        if (qualifies(score)) {
+          overlayText.textContent = 'That run made the top five.';
+          initialsForm.classList.remove('hidden');
+          initialsInput.value = '';
+          initialsInput.focus();
+        } else {
+          overlayText.textContent = 'The debris won this round. Recalibrate and try again.';
+          renderLeaderboard();
+        }
       }
     }
   }
+
+  initialsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const initials = initialsInput.value.trim().toUpperCase().slice(0, 3);
+    if (!initials) return;
+    saveScore(initials, score);
+    initialsForm.classList.add('hidden');
+    overlayText.textContent = 'Score saved. The field remembers.';
+    renderLeaderboard();
+    overlayBtn.focus();
+  });
 
   overlayBtn.addEventListener('click', () => {
     overlayBtn.blur();
@@ -152,7 +348,7 @@
   function makeAsteroid(x, y, size) {
     // size: 3 large, 2 medium, 1 small
     const r = size === 3 ? rand(34, 44) : size === 2 ? rand(20, 26) : rand(10, 14);
-    const speed = (4 - size) * rand(28, 45) + level * 6;
+    const speed = ((4 - size) * rand(28, 45) + level * 6) * diff.speed;
     const dir = rand(0, Math.PI * 2);
     const verts = [];
     const n = Math.floor(rand(8, 12));
@@ -183,13 +379,13 @@
   function startGame() {
     score = 0;
     level = 1;
-    lives = 3;
+    lives = diff.lives;
     ship = makeShip();
     bullets = [];
     asteroids = [];
     particles = [];
     fireCooldown = 0;
-    spawnAsteroids(3);
+    spawnAsteroids(diff.startAsteroids);
     updateHud();
     setState('playing');
   }
@@ -221,6 +417,8 @@
     asteroids.splice(idx, 1);
     score += a.size === 3 ? 20 : a.size === 2 ? 50 : 100;
     explode(a.x, a.y, a.size * 6, colors.muted);
+    sound.explode(a.size);
+    shake = Math.max(shake, a.size * 1.5);
     if (a.size > 1) {
       asteroids.push(makeAsteroid(a.x, a.y, a.size - 1));
       asteroids.push(makeAsteroid(a.x, a.y, a.size - 1));
@@ -228,7 +426,8 @@
     if (asteroids.length === 0) {
       level++;
       ship.invincible = Math.max(ship.invincible, 2);
-      spawnAsteroids(Math.min(2 + level, 8));
+      spawnAsteroids(Math.min(diff.startAsteroids - 1 + level, 8));
+      sound.levelUp();
     }
     updateHud();
   }
@@ -236,6 +435,8 @@
   function hitShip() {
     lives--;
     explode(ship.x, ship.y, 28, colors.orange);
+    sound.shipHit();
+    shake = 14;
     updateHud();
     if (lives <= 0) {
       if (score > highScore) {
@@ -258,6 +459,7 @@
     if (keys.left) ship.angle -= TURN * dt;
     if (keys.right) ship.angle += TURN * dt;
     ship.thrusting = keys.thrust;
+    sound.thrust(keys.thrust);
     if (keys.thrust) {
       ship.vx += Math.cos(ship.angle) * THRUST * dt;
       ship.vy += Math.sin(ship.angle) * THRUST * dt;
@@ -272,6 +474,7 @@
     // Fire
     fireCooldown -= dt;
     if (keys.fire && fireCooldown <= 0) {
+      sound.fire();
       bullets.push({
         x: ship.x + Math.cos(ship.angle) * ship.r,
         y: ship.y + Math.sin(ship.angle) * ship.r,
@@ -387,6 +590,14 @@
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
+    ctx.save();
+    if (shake > 0) {
+      if (!reducedMotion) {
+        ctx.translate(rand(-shake, shake), rand(-shake, shake));
+      }
+      shake = Math.max(0, shake - 0.8);
+    }
+
     for (const p of particles) {
       ctx.globalAlpha = Math.max(p.life / p.maxLife, 0);
       ctx.fillStyle = p.color;
@@ -403,6 +614,8 @@
 
     for (const a of asteroids) drawAsteroid(a);
     if (state === 'playing' || state === 'paused') drawShip();
+
+    ctx.restore();
   }
 
   // ===== Loop =====
