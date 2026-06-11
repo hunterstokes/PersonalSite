@@ -183,8 +183,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return `https://www.newegg.com/p/pl?d=${encodeURIComponent(part)}`;
   }
 
+  function amazonProductUrl(asin) {
+    return `https://www.amazon.com/dp/${asin}` +
+      (AMAZON_AFFILIATE_TAG ? `?tag=${AMAZON_AFFILIATE_TAG}` : '');
+  }
+
+  // Privacy-friendly event counting — no-op until GoatCounter is enabled
+  function trackEvent(name) {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }
+
   // Shared with guide.js (the build configurator)
-  window.hbShop = { amazonSearchUrl, neweggSearchUrl };
+  window.hbShop = { amazonSearchUrl, neweggSearchUrl, amazonProductUrl, trackEvent };
 
   const specLists = document.querySelectorAll('.build-specs');
   if (specLists.length) {
@@ -212,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
           a.rel = 'sponsored nofollow noopener';
           a.textContent = name;
           a.setAttribute('aria-label', `Shop for ${dt.textContent.trim()} ${part} on ${name} (opens in new tab)`);
+          a.addEventListener('click', () => trackEvent(`shop-${name.toLowerCase()}-builds-page`));
           links.appendChild(a);
         });
         dd.appendChild(links);

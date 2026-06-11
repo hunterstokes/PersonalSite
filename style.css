@@ -1221,6 +1221,82 @@ a:hover {
   color: var(--accent);
 }
 
+.prices-stamp {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: -1rem 0 2rem;
+}
+
+/* Wizard */
+.wizard {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  margin-bottom: 1.5rem;
+}
+
+.wizard > summary {
+  cursor: pointer;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  list-style-position: inside;
+}
+
+.wizard > summary:hover {
+  color: var(--accent);
+}
+
+.wizard-body {
+  padding: 0.5rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.wizard-q {
+  border: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.wizard-q legend {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.wizard-chip {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 0.45rem 1rem;
+  margin: 0 0.4rem 0.4rem 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.wizard-chip:hover {
+  border-color: var(--accent);
+}
+
+.builder-radio:checked + .wizard-chip {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.builder-radio:focus-visible + .wizard-chip {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .guide-layout {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -1401,8 +1477,64 @@ a:hover {
   color: var(--orange);
 }
 
+.summary-perf,
+.summary-draw {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.summary-perf {
+  color: var(--accent);
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
 .build-summary .game-btn {
   width: 100%;
+}
+
+/* Guide FAQ */
+.guide-faq {
+  margin-top: 3rem;
+  max-width: 760px;
+}
+
+.guide-faq h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.guide-faq details {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  margin-bottom: 0.6rem;
+}
+
+.guide-faq summary {
+  cursor: pointer;
+  padding: 0.85rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  list-style-position: inside;
+}
+
+.guide-faq summary:hover {
+  color: var(--accent);
+}
+
+.guide-faq details p {
+  padding: 0 1.25rem 1rem;
+  font-size: 0.88rem;
+  margin: 0;
 }
 
 @media (max-width: 900px) {
