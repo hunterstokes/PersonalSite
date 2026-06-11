@@ -1069,6 +1069,64 @@ a:hover {
 .mute-toggle.muted .icon-vol-on { display: none; }
 .mute-toggle.muted .icon-vol-off { display: block; }
 
+/* Difficulty picker */
+.difficulty {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.difficulty legend {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 auto 0.6rem;
+}
+
+.difficulty-options {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.difficulty-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+.difficulty-options label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.2rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.difficulty-options label + input + label {
+  border-left: 1px solid var(--border);
+}
+
+.difficulty-options input:checked + label {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.difficulty-options input:focus-visible + label {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 /* Initials entry */
 .initials-form label {
   display: block;

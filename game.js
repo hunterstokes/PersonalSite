@@ -24,6 +24,28 @@
   const HIGH_KEY = 'hb-field-defender-high';
   const SCORES_KEY = 'hb-field-defender-scores';
   const MUTE_KEY = 'hb-field-defender-muted';
+  const DIFF_KEY = 'hb-field-defender-difficulty';
+
+  // ===== Difficulty =====
+  const DIFFICULTIES = {
+    easy:   { speed: 0.75, startAsteroids: 2, lives: 4, tag: 'E' },
+    normal: { speed: 1.0,  startAsteroids: 3, lives: 3, tag: 'N' },
+    hard:   { speed: 1.3,  startAsteroids: 4, lives: 3, tag: 'H' }
+  };
+  let difficultyName = localStorage.getItem(DIFF_KEY);
+  if (!DIFFICULTIES[difficultyName]) difficultyName = 'normal';
+  let diff = DIFFICULTIES[difficultyName];
+
+  const diffPicker = document.getElementById('difficulty-picker');
+  const diffRadio = document.getElementById('diff-' + difficultyName);
+  if (diffRadio) diffRadio.checked = true;
+  diffPicker.addEventListener('change', (e) => {
+    if (DIFFICULTIES[e.target.value]) {
+      difficultyName = e.target.value;
+      diff = DIFFICULTIES[difficultyName];
+      localStorage.setItem(DIFF_KEY, difficultyName);
+    }
+  });
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ===== Sound (Web Audio, no files) =====
@@ -141,7 +163,7 @@
 
   function saveScore(initials, s) {
     const scores = loadScores();
-    scores.push({ initials, score: s });
+    scores.push({ initials, score: s, tag: diff.tag });
     scores.sort((a, b) => b.score - a.score);
     localStorage.setItem(SCORES_KEY, JSON.stringify(scores.slice(0, 5)));
   }
@@ -157,7 +179,7 @@
       const li = document.createElement('li');
       const initials = document.createElement('span');
       initials.className = 'lb-initials';
-      initials.textContent = entry.initials;
+      initials.textContent = entry.initials + (entry.tag ? ' · ' + entry.tag : '');
       const scoreSpan = document.createElement('span');
       scoreSpan.className = 'lb-score';
       scoreSpan.textContent = entry.score;
@@ -258,6 +280,7 @@
       overlayScore.textContent = '';
       initialsForm.classList.add('hidden');
       leaderboardEl.classList.add('hidden');
+      diffPicker.classList.toggle('hidden', next !== 'menu');
       if (next === 'menu') {
         overlayTitle.textContent = 'Field Defender';
         overlayText.textContent = "Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.";
@@ -325,7 +348,7 @@
   function makeAsteroid(x, y, size) {
     // size: 3 large, 2 medium, 1 small
     const r = size === 3 ? rand(34, 44) : size === 2 ? rand(20, 26) : rand(10, 14);
-    const speed = (4 - size) * rand(28, 45) + level * 6;
+    const speed = ((4 - size) * rand(28, 45) + level * 6) * diff.speed;
     const dir = rand(0, Math.PI * 2);
     const verts = [];
     const n = Math.floor(rand(8, 12));
@@ -356,13 +379,13 @@
   function startGame() {
     score = 0;
     level = 1;
-    lives = 3;
+    lives = diff.lives;
     ship = makeShip();
     bullets = [];
     asteroids = [];
     particles = [];
     fireCooldown = 0;
-    spawnAsteroids(3);
+    spawnAsteroids(diff.startAsteroids);
     updateHud();
     setState('playing');
   }
@@ -403,7 +426,7 @@
     if (asteroids.length === 0) {
       level++;
       ship.invincible = Math.max(ship.invincible, 2);
-      spawnAsteroids(Math.min(2 + level, 8));
+      spawnAsteroids(Math.min(diff.startAsteroids - 1 + level, 8));
       sound.levelUp();
     }
     updateHud();

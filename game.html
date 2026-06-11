@@ -87,6 +87,17 @@
         <h2 id="overlay-title">Field Defender</h2>
         <p id="overlay-text">Debris is drifting into the field. Pilot your ship, blast it clear, and don't get hit.</p>
         <p class="overlay-score" id="overlay-score"></p>
+        <fieldset class="difficulty" id="difficulty-picker">
+          <legend>Difficulty</legend>
+          <div class="difficulty-options">
+            <input type="radio" name="difficulty" id="diff-easy" value="easy">
+            <label for="diff-easy">Easy</label>
+            <input type="radio" name="difficulty" id="diff-normal" value="normal" checked>
+            <label for="diff-normal">Normal</label>
+            <input type="radio" name="difficulty" id="diff-hard" value="hard">
+            <label for="diff-hard">Hard</label>
+          </div>
+        </fieldset>
         <form class="initials-form hidden" id="initials-form">
           <label for="initials-input">New top score! Enter your initials</label>
           <div class="initials-row">
