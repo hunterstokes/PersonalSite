@@ -32,6 +32,23 @@ Shared assets: `style.css` (all pages except the resume), `script.js`
   account, then uncomment the snippet in the `<head>` of `index.html`,
   `game.html`, and `builds.html` and set your site code.
 
+## Monetization (PC builds affiliate links)
+
+Every spec row on `builds.html` gets automatic "Amazon · Newegg" search links,
+generated at page load from the part name in `script.js` — so updating a part
+name updates its links too.
+
+1. **Amazon**: join [Amazon Associates](https://affiliate-program.amazon.com),
+   then set your tracking ID in the `AMAZON_AFFILIATE_TAG` constant at the top
+   of the build-links block in `script.js` (e.g. `'huntersb-20'`). Every Amazon
+   link is then credited to you.
+2. **Newegg**: their affiliate program runs through CJ/Rakuten. Once enrolled,
+   replace the plain Newegg search URL in the same block with your deep-link
+   prefix.
+3. **Disclosure**: the FTC requires the affiliate disclosure shown at the top
+   of `builds.html` — keep it on any page with affiliate links. Links carry
+   `rel="sponsored nofollow"` per Google's guidelines.
+
 ## Theming
 
 Dark is the default; light theme overrides live on
