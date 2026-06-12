@@ -63,6 +63,8 @@ import * as THREE from './vendor/three.module.min.js';
     wire: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.7 }),
     caseLine: new THREE.LineBasicMaterial({ transparent: true, opacity: 0 }),
     pane: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.BackSide }),
+    glassPane: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.DoubleSide }),
+    strip: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }),
     ring: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }),
     particles: new THREE.PointsMaterial({ size: 0.05, transparent: true, opacity: 0.3 })
   };
@@ -74,7 +76,7 @@ import * as THREE from './vendor/three.module.min.js';
     mats.pcb.color.set(dark ? '#101e33' : '#d3deec');
     mats.body.color.set(dark ? '#1a2230' : '#aab7c9');
     mats.metal.color.set(dark ? '#6b7686' : '#8e9bad');
-    for (const m of [mats.glow, mats.halo, mats.edge, mats.trace, mats.tips, mats.wire, mats.caseLine, mats.pane, mats.ring, mats.particles]) m.color.set(accent);
+    for (const m of [mats.glow, mats.halo, mats.edge, mats.trace, mats.tips, mats.wire, mats.caseLine, mats.pane, mats.glassPane, mats.strip, mats.ring, mats.particles]) m.color.set(accent);
     rimLight.color.set(accent);
   }
   applyPalette();
@@ -88,9 +90,14 @@ import * as THREE from './vendor/three.module.min.js';
   const rig = new THREE.Group();
   scene.add(rig);
 
+  // Everything board-mounted lives in this group so the whole populated
+  // motherboard can tilt upright into the tower for the finale.
+  const mobo = new THREE.Group();
+  rig.add(mobo);
+
   // ===== Motherboard & CPU (present from frame one) =====
   const board = edged(new THREE.Mesh(new THREE.BoxGeometry(9, 0.16, 7), mats.pcb));
-  rig.add(board);
+  mobo.add(board);
 
   const chip = new THREE.Group();
   chip.add(edged(new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.18, 1.15), mats.body)));
@@ -102,7 +109,7 @@ import * as THREE from './vendor/three.module.min.js';
   halo.position.y = 0.12;
   chip.add(halo);
   chip.position.y = 0.09;
-  rig.add(chip);
+  mobo.add(chip);
 
   // ===== Phase 1: circuit traces grow outward from the chip =====
   const rand = rng(1337);
@@ -140,13 +147,13 @@ import * as THREE from './vendor/three.module.min.js';
 
   const traceGeo = new THREE.BufferGeometry();
   traceGeo.setAttribute('position', new THREE.BufferAttribute(tracePos, 3));
-  rig.add(new THREE.LineSegments(traceGeo, mats.trace));
+  mobo.add(new THREE.LineSegments(traceGeo, mats.trace));
 
   // Glowing tips at the active trace ends
   const tipPos = new Float32Array(traces.length * 3);
   const tipGeo = new THREE.BufferGeometry();
   tipGeo.setAttribute('position', new THREE.BufferAttribute(tipPos, 3));
-  rig.add(new THREE.Points(tipGeo, mats.tips));
+  mobo.add(new THREE.Points(tipGeo, mats.tips));
 
   // Small parts sprout where finished traces end
   const rand2 = rng(777);
@@ -161,7 +168,7 @@ import * as THREE from './vendor/three.module.min.js';
     mesh.position.set(t.end[0], 0.2, t.end[1]);
     mesh.scale.setScalar(0.001);
     sprouts.push({ mesh, at: t.doneAt });
-    rig.add(mesh);
+    mobo.add(mesh);
   }
 
   // Landmark sockets appear as wireframe ghosts, then solidify — they are
@@ -170,7 +177,7 @@ import * as THREE from './vendor/three.module.min.js';
   function landmark(t, buildSolid) {
     const solid = buildSolid(false), wire = buildSolid(true);
     solid.visible = wire.visible = false;
-    rig.add(solid, wire);
+    mobo.add(solid, wire);
     landmarks.push({ t, solid, wire });
   }
   const boxAt = (w, h, d, x, y, z, wireframe, mat) => {
@@ -208,10 +215,10 @@ import * as THREE from './vendor/three.module.min.js';
   // ===== Phase 2: components fly in and dock =====
   const parts = [];
   const spinFans = []; // fan blade groups that spin once their part is docked
-  function part(group, from, to, s, e) {
+  function part(group, from, to, s, e, parent = mobo) {
     group.position.copy(from);
     group.visible = false;
-    rig.add(group);
+    parent.add(group);
     const rec = { group, from, to, s, e, docked: false };
     parts.push(rec);
     return rec;
@@ -241,7 +248,7 @@ import * as THREE from './vendor/three.module.min.js';
     clip.position.y = 0.52;
     g.add(stick, clip);
     part(g, new THREE.Vector3(2.55 + i * 0.3, 4.5, -1.2), new THREE.Vector3(2.55 + i * 0.3, 0.62, -1.2),
-      0.4 + i * 0.035, 0.52 + i * 0.035);
+      0.34 + i * 0.03, 0.46 + i * 0.03);
   }
 
   // VRM capacitors pop up beside the CPU
@@ -250,8 +257,8 @@ import * as THREE from './vendor/three.module.min.js';
     const cap = new THREE.Mesh(capGeo, mats.metal);
     cap.position.set(-1.5 - (i % 4) * 0.28, 0.25, -1.9 + Math.floor(i / 4) * 0.34);
     cap.scale.setScalar(0.001);
-    rig.add(cap);
-    popParts.push({ mesh: cap, s: 0.42 + i * 0.02, e: 0.5 + i * 0.02 });
+    mobo.add(cap);
+    popParts.push({ mesh: cap, s: 0.36 + i * 0.018, e: 0.44 + i * 0.018 });
   }
 
   // Cooler descends onto the CPU
@@ -262,7 +269,7 @@ import * as THREE from './vendor/three.module.min.js';
       fin.position.y = 0.1 + i * 0.16;
       g.add(fin);
     }
-    const rec = part(g, new THREE.Vector3(0, 4.2, 0), new THREE.Vector3(0, 0.18, 0), 0.52, 0.68);
+    const rec = part(g, new THREE.Vector3(0, 4.2, 0), new THREE.Vector3(0, 0.18, 0), 0.44, 0.58);
     g.add(fan(0.55, 0.85, 0, 0, rec));
   }
 
@@ -270,30 +277,70 @@ import * as THREE from './vendor/three.module.min.js';
   {
     const g = new THREE.Group();
     g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.45, 1.15), mats.body)));
-    const rec = part(g, new THREE.Vector3(10, 0.55, 2.9), new THREE.Vector3(0.4, 0.55, 2.9), 0.62, 0.78);
+    const rec = part(g, new THREE.Vector3(10, 0.55, 2.9), new THREE.Vector3(0.4, 0.55, 2.9), 0.52, 0.66);
     g.add(fan(0.38, 0.27, -0.75, 0, rec), fan(0.38, 0.27, 0.75, 0, rec));
   }
 
-  // PSU docks at the far corner
+  // PSU slides into the tower's bottom shroud (rig space — it belongs to
+  // the case, not the board, so it doesn't ride the tilt)
   {
     const g = new THREE.Group();
-    g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.1, 1.7), mats.body)));
-    const grille = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.7, 0.04), mats.metal);
+    g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.85, 1.7), mats.body)));
+    const grille = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.55, 0.04), mats.metal);
     grille.position.z = 0.86;
     g.add(grille);
-    part(g, new THREE.Vector3(-10, 0.75, -1.6), new THREE.Vector3(-3.4, 0.75, -1.6), 0.72, 0.84);
+    part(g, new THREE.Vector3(-10, 0.5, 0), new THREE.Vector3(-1.6, 0.5, 0), 0.74, 0.84, rig);
   }
 
-  // ===== Finale: wireframe case + caliper ring =====
-  const caseShell = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(11, 7.5, 9)), mats.caseLine);
-  caseShell.position.y = 2.4;
-  const casePanes = new THREE.Mesh(new THREE.BoxGeometry(11, 7.5, 9), mats.pane);
-  casePanes.position.y = 2.4;
-  const ringMesh = new THREE.Mesh(new THREE.TorusGeometry(7.2, 0.018, 8, 90), mats.ring);
+  // ===== Finale: a gaming tower assembles around the upright board =====
+  const tower = new THREE.Group();
+  tower.visible = false;
+  rig.add(tower);
+
+  const frameShell = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(5.8, 5.4, 3.2)), mats.caseLine);
+  frameShell.position.y = 2.7;
+  const framePanes = new THREE.Mesh(new THREE.BoxGeometry(5.8, 5.4, 3.2), mats.pane);
+  framePanes.position.y = 2.7;
+  // tempered-glass side panel facing the camera
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 5.2), mats.glassPane);
+  glass.position.set(0, 2.7, 1.61);
+  // glow strips along the case edges
+  const strips = [
+    [0.06, 5.4, 0.06, 2.9, 2.7, 1.6],
+    [0.06, 5.4, 0.06, 2.9, 2.7, -1.6],
+    [5.8, 0.06, 0.06, 0, 5.4, 1.6]
+  ].map(([w, hh, d, x, y, z]) => {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), mats.strip);
+    s.position.set(x, y, z);
+    return s;
+  });
+  const shroud = edged(new THREE.Mesh(new THREE.BoxGeometry(5.7, 0.95, 3.1), mats.body));
+  const feet = [-2, 2].map((x) => {
+    const ft = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.24, 3.0), mats.body);
+    ft.position.set(x, -0.12, 0);
+    return ft;
+  });
+  // case fans: three front intakes on the visible face, one top exhaust
+  const towerState = { docked: false };
+  const towerFans = [];
+  for (let i = 0; i < 3; i++) {
+    const wrap = new THREE.Group();
+    wrap.add(fan(0.5, 0, 0, 0, towerState));
+    wrap.rotation.z = Math.PI / 2;
+    wrap.position.set(2.72, 1.5 + i * 1.2, 0);
+    towerFans.push(wrap);
+  }
+  {
+    const top = new THREE.Group();
+    top.add(fan(0.5, 0, 0, 0, towerState));
+    top.position.set(1.2, 5.3, 0);
+    towerFans.push(top);
+  }
+  const ringMesh = new THREE.Mesh(new THREE.TorusGeometry(5.4, 0.018, 8, 90), mats.ring);
   ringMesh.rotation.x = Math.PI / 2;
-  ringMesh.position.y = 0.3;
-  caseShell.visible = casePanes.visible = ringMesh.visible = false;
-  rig.add(caseShell, casePanes, ringMesh);
+  ringMesh.position.y = 0.05;
+  ringMesh.visible = false;
+  tower.add(frameShell, framePanes, glass, ...strips, shroud, ...feet, ...towerFans, ringMesh);
 
   // Ambient particles for depth
   const pGeo = new THREE.BufferGeometry();
@@ -305,8 +352,8 @@ import * as THREE from './vendor/three.module.min.js';
 
   // ===== Scroll → scene state =====
   function update(p, time) {
-    // trace growth finishes at ~45% scroll, overlapping early assembly
-    const f = Math.max(stage(p, 0, 0.45), 0.04);
+    // trace growth finishes at ~38% scroll, overlapping early assembly
+    const f = Math.max(stage(p, 0, 0.38), 0.04);
     const cutoff = Math.floor(totalSegs * f);
     traceGeo.setDrawRange(0, cutoff * 2);
 
@@ -340,13 +387,24 @@ import * as THREE from './vendor/three.module.min.js';
     for (const pp of popParts) pp.mesh.scale.setScalar(Math.max(stage(p, pp.s, pp.e), 0.001));
     for (const sf of spinFans) sf.blades.rotation.y = sf.part.docked ? time * 4 : 0;
 
-    const ct = stage(p, 0.86, 1);
-    caseShell.visible = casePanes.visible = ct > 0;
+    // the populated board tilts upright and shrinks into the tower
+    const tp = stage(p, 0.7, 0.88);
+    mobo.rotation.x = tp * Math.PI / 2;
+    mobo.scale.setScalar(lerp(1, 0.55, tp));
+    mobo.position.set(0, 2.6 * tp, 0.7 * tp);
+
+    const ct = stage(p, 0.72, 0.96);
+    tower.visible = ct > 0;
     mats.caseLine.opacity = 0.6 * ct;
     mats.pane.opacity = 0.04 * ct;
-    caseShell.scale.setScalar(lerp(1.25, 1, ct));
-    casePanes.scale.copy(caseShell.scale);
-    const rt = stage(p, 0.85, 1);
+    mats.glassPane.opacity = 0.08 * ct;
+    mats.strip.opacity = (0.65 + 0.25 * Math.sin(time * 2)) * stage(p, 0.86, 0.96);
+    frameShell.scale.setScalar(lerp(1.2, 1, ct));
+    framePanes.scale.copy(frameShell.scale);
+    shroud.position.y = lerp(-1.8, 0.5, stage(p, 0.78, 0.88));
+    towerFans.forEach((fw, i) => fw.scale.setScalar(Math.max(stage(p, 0.8 + i * 0.03, 0.9 + i * 0.03), 0.001)));
+    towerState.docked = ct >= 0.999;
+    const rt = stage(p, 0.92, 1);
     ringMesh.visible = rt > 0;
     mats.ring.opacity = 0.5 * rt;
 
@@ -354,12 +412,13 @@ import * as THREE from './vendor/three.module.min.js';
     rig.rotation.y = time * 0.05 + p * 0.5;
   }
 
-  // Camera path: die close-up → board overview → assembly view → full rig
+  // Camera path: die close-up → board overview → assembly view → tower reveal
   const KEYS = [
     { p: 0, pos: [1.6, 1.5, 1.6], look: [0, 0.15, 0] },
-    { p: 0.3, pos: [4.8, 5.6, 4.8], look: [0, 0.1, 0] },
-    { p: 0.52, pos: [6.0, 6.4, 7.4], look: [0, 0.3, 0] },
-    { p: 1, pos: [7.0, 7.2, 9.6], look: [0, 1.0, 0] }
+    { p: 0.26, pos: [4.8, 5.6, 4.8], look: [0, 0.1, 0] },
+    { p: 0.5, pos: [6.0, 6.4, 7.4], look: [0, 0.3, 0] },
+    { p: 0.68, pos: [6.6, 6.0, 8.6], look: [0, 0.5, 0] },
+    { p: 1, pos: [6.6, 4.4, 9.4], look: [0, 2.5, 0] }
   ];
   function placeCamera(p, mx, my) {
     let i = 0;
