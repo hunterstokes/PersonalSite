@@ -134,20 +134,20 @@ a:hover {
   }
 }
 
-/* ===== 3D Helix Scene ===== */
-#helix-scene {
+/* ===== 3D Chip-Build Scene ===== */
+#build-scene {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 }
 
-#helix-scene canvas {
+#build-scene canvas {
   display: block;
 }
 
 @media print {
-  #helix-scene {
+  #build-scene {
     display: none;
   }
 }

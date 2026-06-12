@@ -16,18 +16,22 @@ Built with vanilla HTML, CSS, and JavaScript. No frameworks, no build step.
 
 Shared assets: `style.css` (all pages except the resume), `script.js`
 (theme, nav, reveals, spotlight, hero canvas, contact form), `game.js`
-(the game), `helix3d.js` (the scroll-driven 3D helix on the homepage),
+(the game), `build3d.js` (the scroll-driven 3D chip build on the homepage),
 `fonts/` (self-hosted Inter + JetBrains Mono), `vendor/` (self-hosted
 three.js module + license).
 
-### The 3D homepage helix
+### The 3D homepage chip build
 
-`helix3d.js` renders a full-page DNA helix behind the homepage; the camera
-rides down the strand as the visitor scrolls. It is theme-aware (recolors
-on toggle), renders a single static frame under `prefers-reduced-motion`,
-pauses when the tab is hidden, and dims on phones for text contrast. If
-WebGL is unavailable it bails silently and the original 2D hero canvas in
-`script.js` takes over — don't remove the 2D code path.
+`build3d.js` renders a full-page scene behind the homepage that assembles
+a computer as the visitor scrolls: it opens close on a glowing CPU die,
+circuit traces grow outward into a motherboard (small components sprouting
+where they land, sockets appearing as wireframe ghosts before solidifying),
+then RAM, cooler, GPU, and PSU fly in and dock, and a wireframe case closes
+around the finished build. It is theme-aware (recolors on toggle), renders
+a single static frame under `prefers-reduced-motion`, pauses when the tab
+is hidden, and dims on phones for text contrast. If WebGL is unavailable
+it bails silently and the original 2D hero canvas in `script.js` takes
+over — don't remove the 2D code path.
 
 ## Editing content
 
