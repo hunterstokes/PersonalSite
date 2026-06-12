@@ -577,3 +577,23 @@ export function createPC(scene) {
 
   return { rig, chip, update, applyPalette };
 }
+
+// Camera path for the build animation: die close-up → board overview →
+// assembly view → tower reveal. Shared so any consumer can fly it.
+export const BUILD_KEYS = [
+  { p: 0, pos: [0, 1.3, 0], look: [0, 0.15, 0] },
+  { p: 0.26, pos: [5.2, 6.2, 5.2], look: [0, 0.1, 0] },
+  { p: 0.5, pos: [6.4, 7.0, 8.0], look: [0, 0.3, 0] },
+  { p: 0.68, pos: [7.0, 6.4, 9.2], look: [0, 0.5, 0] },
+  { p: 1, pos: [6.8, 4.8, 10.0], look: [0, 3.0, 0] }
+];
+export function cameraPose(p) {
+  let i = 0;
+  while (i < BUILD_KEYS.length - 2 && p > BUILD_KEYS[i + 1].p) i++;
+  const a = BUILD_KEYS[i], b = BUILD_KEYS[i + 1];
+  const t = stage(p, a.p, b.p);
+  return {
+    pos: a.pos.map((v, j) => lerp(v, b.pos[j], t)),
+    look: a.look.map((v, j) => lerp(v, b.look[j], t))
+  };
+}

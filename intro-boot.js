@@ -1,8 +1,8 @@
-// Intro loader — decides whether the 3D build intro will play BEFORE
-// downloading three.js (~750KB of vendor modules). Repeat loads in the
-// same session, reduced-motion visitors, and no-WebGL browsers never pay
-// for the 3D code at all; they get the site (and the 2D hero canvas)
-// immediately. build3d.js re-checks everything as a second line of defense.
+// Intro loader — decides whether the circuit intro will play before
+// downloading any animation code. The intro is plain 2D canvas (no
+// three.js), so the homepage never pays for the 3D vendor module at all;
+// that loads only on builds.html for the PC build viewer. Repeat loads in
+// the same session and reduced-motion visitors get the site immediately.
 (() => {
   const html = document.documentElement;
   const show = () => html.classList.remove('intro-pending', 'intro-fading');
@@ -11,14 +11,10 @@
   try { play = !sessionStorage.getItem('hb-intro-played'); } catch { /* storage blocked */ }
   if (play && matchMedia('(prefers-reduced-motion: reduce)').matches) play = false;
   if (play && !document.getElementById('build-scene')) play = false;
-  if (play) {
-    const probe = document.createElement('canvas');
-    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) play = false;
-  }
 
   if (!play) {
     show();
     return;
   }
-  import('./build3d.js').catch(show);
+  import('./intro2d.js').catch(show);
 })();

@@ -62,11 +62,13 @@ function watchErrors(page, errors, label) {
   await page.waitForTimeout(1200);
   check('intro: content hidden while playing',
     await page.evaluate(() => getComputedStyle(document.querySelector('main')).opacity === '0'));
-  check('intro: 3D canvas rendering',
+  check('intro: circuit canvas rendering',
     await page.evaluate(() => !!document.querySelector('#build-scene canvas')));
   check('intro: skip button present',
     await page.evaluate(() => !!document.querySelector('.intro-skip')));
-  await page.waitForTimeout(8000); // intro (5.6s) + fades + cleanup
+  check('intro: homepage never downloads three.js',
+    await page.evaluate(() => performance.getEntriesByType('resource').every((r) => !r.name.includes('three.module'))));
+  await page.waitForTimeout(7000); // intro (~3.3s) + fades + cleanup
   check('intro: scene fully torn down',
     await page.evaluate(() => !document.getElementById('build-scene') && !document.querySelector('.intro-skip')));
   check('intro: site content visible after',
@@ -127,6 +129,8 @@ function watchErrors(page, errors, label) {
   await page.waitForSelector('#tower-viewer canvas', { timeout: 15000 }).catch(() => {});
   check('builds: tower viewer canvas appears',
     await page.evaluate(() => !!document.querySelector('#tower-viewer canvas')));
+  check('builds: rebuild control revealed',
+    await page.evaluate(() => document.getElementById('tower-rebuild')?.hidden === false));
   const box = await page.locator('#tower-viewer').boundingBox();
   if (box) {
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);

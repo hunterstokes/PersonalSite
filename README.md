@@ -20,26 +20,28 @@ Shared assets: `style.css` (all pages except the resume), `script.js`
 `fonts/` (self-hosted Inter + JetBrains Mono), `vendor/` (self-hosted
 three.js module + license).
 
-### The 3D PC model
+### The animations
 
-`pcscene.js` is the single source of truth for the 3D gaming rig — a
-true-scale ATX board that assembles from a lone CPU into a glass-paneled
-tower as its `update(p, time, spin)` progress runs 0→1. Two consumers:
+**Homepage circuit intro** (`intro2d.js`, loaded on demand by
+`intro-boot.js`): once per browser session, circuit traces race in from
+the screen edges and converge on a ring around the spot where the name
+lands, a pulse fires, and the site cross-fades in. Plain 2D canvas — the
+homepage never downloads three.js. The head script in `index.html` hides
+the site before first paint (with a failsafe timeout); Skip button and
+Escape end it early, and the "Replay intro" control in the footer clears
+the session flag. Never plays under `prefers-reduced-motion`.
 
-- **`build3d.js`** — the ~5-second loading intro, loaded on demand by
-  `intro-boot.js`. The boot script decides whether the intro will play
-  *before* downloading the ~750KB of three.js: once per browser session
-  (`sessionStorage`), never under `prefers-reduced-motion` or without
-  WebGL. The head script in `index.html` hides the site before first
-  paint (with a failsafe timeout); the intro fades the site in when it
-  finishes and disposes everything. Skip button and Escape end it early,
-  and the "Replay intro" control in the footer clears the session flag.
-- **`tower3d.js`** — the drag-to-orbit viewer of the finished rig on
-  `builds.html`, lazy-loaded by `tower-boot.js` only when the viewer
-  scrolls into view (and only with WebGL; the fallback text stays
-  otherwise).
+**PC build viewer** (`tower3d.js` on `builds.html`, lazy-loaded by
+`tower-boot.js` when scrolled into view): plays the full ~5-second build
+of the rig — traces grow into the true-scale ATX board, parts fly in and
+dock, the board tilts upright into a glass-paneled tower — flying the
+shared camera path, then settles into a frontal drag-to-orbit view with
+a "Rebuild" control. `pcscene.js` is the single source of truth for the
+3D model (`createPC`, `update(p, time, spin)`, `cameraPose`). Under
+reduced motion the finished rig renders statically; without WebGL the
+fallback text stays.
 
-Visits that never load the 3D code get the 2D hero canvas from
+Visits that never load the animation code get the 2D hero canvas from
 `script.js` — don't remove the 2D code path.
 
 ### CI

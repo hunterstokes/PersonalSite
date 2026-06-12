@@ -238,6 +238,22 @@ html.intro-fading body > *:not(#build-scene):not(.intro-skip) {
   text-align: center;
 }
 
+.tower-rebuild {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 0.6rem;
+  cursor: pointer;
+}
+
+.tower-rebuild:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 600px) {
   #tower-viewer {
     height: 320px;
