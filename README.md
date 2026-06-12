@@ -23,15 +23,17 @@ three.js module + license).
 ### The 3D homepage chip build
 
 `build3d.js` renders a full-page scene behind the homepage that assembles
-a computer as the visitor scrolls: it opens close on a glowing CPU die,
-circuit traces grow outward into a motherboard (small components sprouting
-where they land, sockets appearing as wireframe ghosts before solidifying),
-then RAM, cooler, GPU, and PSU fly in and dock, and a wireframe case closes
-around the finished build. It is theme-aware (recolors on toggle), renders
-a single static frame under `prefers-reduced-motion`, pauses when the tab
-is hidden, and dims on phones for text contrast. If WebGL is unavailable
-it bails silently and the original 2D hero canvas in `script.js` takes
-over — don't remove the 2D code path.
+a gaming PC as the visitor scrolls: it opens close on a glowing CPU die,
+circuit traces grow outward into an ATX-style motherboard (DDR slots,
+VRM heatsinks, chipset, PCIe slots, I/O shroud, and smaller fixtures
+appearing where the traces reach them), then RAM, cooler, GPU, and PSU
+fly in and dock, and the populated board tilts upright into a
+glass-paneled tower with case fans and glow strips. It is theme-aware
+(recolors on toggle), renders a single static frame under
+`prefers-reduced-motion`, pauses when the tab is hidden, and dims on
+phones for text contrast. If WebGL is unavailable it bails silently and
+the original 2D hero canvas in `script.js` takes over — don't remove the
+2D code path.
 
 ## Editing content
 

@@ -108,7 +108,10 @@ import * as THREE from './vendor/three.module.min.js';
   halo.rotation.x = Math.PI / 2;
   halo.position.y = 0.12;
   chip.add(halo);
-  chip.position.y = 0.09;
+  // CPU socket sits up-and-rear of board center, ATX-style (local -z is the
+  // top of the board once it tilts upright into the tower)
+  const CX = -0.3, CZ = -0.6;
+  chip.position.set(CX, 0.09, CZ);
   mobo.add(chip);
 
   // ===== Phase 1: circuit traces grow outward from the chip =====
@@ -117,15 +120,15 @@ import * as THREE from './vendor/three.module.min.js';
   const traces = [];
   for (let i = 0; i < 64; i++) {
     const side = i % 4, segs = [], n = 2 + Math.floor(rand() * 3);
-    let x = (rand() - 0.5), z = (rand() - 0.5);
-    if (side === 0) x = 0.62; else if (side === 1) x = -0.62;
-    else if (side === 2) z = 0.62; else z = -0.62;
+    let x = CX + (rand() - 0.5), z = CZ + (rand() - 0.5);
+    if (side === 0) x = CX + 0.62; else if (side === 1) x = CX - 0.62;
+    else if (side === 2) z = CZ + 0.62; else z = CZ - 0.62;
     let horiz = side < 2;
     for (let s = 0; s < n; s++) {
       const len = (0.6 + rand() * 1.9) * (s === 0 ? 1.4 : 1);
       let nx = x, nz = z;
-      if (horiz) nx = clampTo(x + (side === 1 ? -len : side === 0 ? len : (rand() < 0.5 ? -len : len)), 4.2);
-      else nz = clampTo(z + (side === 3 ? -len : side === 2 ? len : (rand() < 0.5 ? -len : len)), 3.2);
+      if (horiz) nx = clampTo(x + (side === 1 ? -len : side === 0 ? len : (rand() < 0.5 ? -len : len)), 3.4);
+      else nz = clampTo(z + (side === 3 ? -len : side === 2 ? len : (rand() < 0.5 ? -len : len)), 2.6);
       segs.push([x, z, nx, nz]);
       x = nx; z = nz; horiz = !horiz;
     }
@@ -190,27 +193,99 @@ import * as THREE from './vendor/three.module.min.js';
     m.position.set(x, y, z);
     return m;
   };
-  landmark(0.45, (wf) => { // RAM slots
+  landmark(0.42, (wf) => { // four DDR slots right of the socket
     const g = new THREE.Group();
-    for (let i = 0; i < 4; i++) g.add(boxAt(0.14, 0.12, 2.5, 2.55 + i * 0.3, 0.12, -1.2, wf));
+    for (let i = 0; i < 4; i++) g.add(boxAt(0.14, 0.12, 2.6, 2.05 + i * 0.3, 0.12, -1.0, wf));
     return g;
   });
-  landmark(0.55, (wf) => boxAt(1.0, 0.22, 1.0, -2.4, 0.18, 1.8, wf)); // chipset
-  landmark(0.65, (wf) => { // I/O ports
+  landmark(0.48, (wf) => { // VRM heatsinks wrap the socket's top and rear
     const g = new THREE.Group();
-    for (let i = 0; i < 3; i++) g.add(boxAt(0.5, 0.4, 0.5, -3.2 + i * 0.65, 0.3, -2.9, wf, mats.metal));
+    g.add(boxAt(2.4, 0.35, 0.55, -0.3, 0.26, -2.2, wf, mats.metal));
+    g.add(boxAt(0.55, 0.35, 2.2, -1.95, 0.26, -0.6, wf, mats.metal));
     return g;
   });
-  landmark(0.75, (wf) => { // PCIe slot
+  landmark(0.55, (wf) => { // chipset heatsink, lower right
     const g = new THREE.Group();
-    g.add(boxAt(3.0, 0.14, 0.5, 0.4, 0.14, 2.9, wf));
+    g.add(boxAt(1.1, 0.22, 1.1, 2.6, 0.18, 1.7, wf));
     if (!wf) {
-      const strip = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.04, 0.18), mats.glow);
-      strip.position.set(0.4, 0.22, 2.9);
+      const led = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 0.5), mats.glow);
+      led.position.set(2.6, 0.31, 1.7);
+      g.add(led);
+    }
+    return g;
+  });
+  landmark(0.62, (wf) => { // rear I/O shroud along the back edge
+    const g = new THREE.Group();
+    g.add(boxAt(0.6, 0.5, 2.4, -4.0, 0.33, -2.0, wf, mats.metal));
+    if (!wf) {
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 2.2), mats.glow);
+      strip.position.set(-4.0, 0.6, -2.0);
       g.add(strip);
     }
     return g;
   });
+  landmark(0.72, (wf) => { // PCIe x16 slot below the socket, anchored at the rear
+    const g = new THREE.Group();
+    g.add(boxAt(3.0, 0.14, 0.45, -2.2, 0.14, 1.3, wf));
+    if (!wf) {
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.04, 0.18), mats.glow);
+      strip.position.set(-2.2, 0.22, 1.3);
+      g.add(strip);
+    }
+    return g;
+  });
+  landmark(0.77, (wf) => boxAt(1.2, 0.12, 0.4, -2.7, 0.13, 2.1, wf)); // empty x1 slot
+
+  // Smaller board fixtures pop in as the traces reach them
+  const details = [];
+  function detail(t, obj) {
+    obj.scale.setScalar(0.001);
+    mobo.add(obj);
+    details.push({ obj, t });
+  }
+  { // mounting standoffs
+    const g = new THREE.Group();
+    for (const sx of [-4.2, 0, 4.2]) for (const sz of [-3.2, 0, 3.2]) {
+      const d = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.06, 8), mats.gold);
+      d.position.set(sx, 0.11, sz);
+      g.add(d);
+    }
+    detail(0.3, g);
+  }
+  { // 24-pin ATX connector on the right edge
+    const m = edged(new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.35, 1.3), mats.body));
+    m.position.set(3.85, 0.26, -0.4);
+    detail(0.5, m);
+  }
+  { // 8-pin EPS by the rear top corner
+    const m = edged(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.25, 0.3), mats.body));
+    m.position.set(-3.0, 0.2, -3.1);
+    detail(0.58, m);
+  }
+  { // M.2 heatsink plate between socket and PCIe
+    const m = edged(new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.5), mats.metal));
+    m.position.set(-1.2, 0.12, 0.5);
+    detail(0.64, m);
+  }
+  { // SATA ports on the right edge
+    const g = new THREE.Group();
+    for (let i = 0; i < 3; i++) {
+      const s = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 0.4), mats.body);
+      s.position.set(4.0, 0.19, 1.5 + i * 0.55);
+      g.add(s);
+    }
+    detail(0.68, g);
+  }
+  { // CMOS battery
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.05, 16), mats.metal);
+    m.position.set(0.6, 0.11, 2.4);
+    detail(0.72, m);
+  }
+  { // front-panel header on the bottom edge
+    const m = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.18, 0.25), mats.body);
+    m.position.set(2.2, 0.17, 3.2);
+    detail(0.76, m);
+  }
 
   // ===== Phase 2: components fly in and dock =====
   const parts = [];
@@ -247,7 +322,7 @@ import * as THREE from './vendor/three.module.min.js';
     const clip = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 2.3), mats.glow);
     clip.position.y = 0.52;
     g.add(stick, clip);
-    part(g, new THREE.Vector3(2.55 + i * 0.3, 4.5, -1.2), new THREE.Vector3(2.55 + i * 0.3, 0.62, -1.2),
+    part(g, new THREE.Vector3(2.05 + i * 0.3, 4.5, -1.0), new THREE.Vector3(2.05 + i * 0.3, 0.62, -1.0),
       0.34 + i * 0.03, 0.46 + i * 0.03);
   }
 
@@ -255,7 +330,7 @@ import * as THREE from './vendor/three.module.min.js';
   const popParts = [];
   for (let i = 0; i < 8; i++) {
     const cap = new THREE.Mesh(capGeo, mats.metal);
-    cap.position.set(-1.5 - (i % 4) * 0.28, 0.25, -1.9 + Math.floor(i / 4) * 0.34);
+    cap.position.set(0.9 + (i % 4) * 0.3, 0.25, -2.45 + Math.floor(i / 4) * 0.38);
     cap.scale.setScalar(0.001);
     mobo.add(cap);
     popParts.push({ mesh: cap, s: 0.36 + i * 0.018, e: 0.44 + i * 0.018 });
@@ -269,7 +344,7 @@ import * as THREE from './vendor/three.module.min.js';
       fin.position.y = 0.1 + i * 0.16;
       g.add(fin);
     }
-    const rec = part(g, new THREE.Vector3(0, 4.2, 0), new THREE.Vector3(0, 0.18, 0), 0.44, 0.58);
+    const rec = part(g, new THREE.Vector3(CX, 4.2, CZ), new THREE.Vector3(CX, 0.18, CZ), 0.44, 0.58);
     g.add(fan(0.55, 0.85, 0, 0, rec));
   }
 
@@ -277,7 +352,7 @@ import * as THREE from './vendor/three.module.min.js';
   {
     const g = new THREE.Group();
     g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.45, 1.15), mats.body)));
-    const rec = part(g, new THREE.Vector3(10, 0.55, 2.9), new THREE.Vector3(0.4, 0.55, 2.9), 0.52, 0.66);
+    const rec = part(g, new THREE.Vector3(10, 0.55, 1.3), new THREE.Vector3(-2.0, 0.55, 1.3), 0.52, 0.66);
     g.add(fan(0.38, 0.27, -0.75, 0, rec), fan(0.38, 0.27, 0.75, 0, rec));
   }
 
@@ -372,6 +447,8 @@ import * as THREE from './vendor/three.module.min.js';
 
     for (const s of sprouts) s.mesh.scale.setScalar(Math.max(stage(f, s.at, s.at + 0.06), 0.001));
 
+    for (const d of details) d.obj.scale.setScalar(Math.max(stage(f, d.t, d.t + 0.05), 0.001));
+
     for (const lm of landmarks) {
       lm.wire.visible = f >= lm.t - 0.15 && f < lm.t;
       lm.solid.visible = f >= lm.t;
@@ -414,7 +491,7 @@ import * as THREE from './vendor/three.module.min.js';
 
   // Camera path: die close-up → board overview → assembly view → tower reveal
   const KEYS = [
-    { p: 0, pos: [1.6, 1.5, 1.6], look: [0, 0.15, 0] },
+    { p: 0, pos: [1.3, 1.4, 1.0], look: [0, 0.15, 0] },
     { p: 0.26, pos: [4.8, 5.6, 4.8], look: [0, 0.1, 0] },
     { p: 0.5, pos: [6.0, 6.4, 7.4], look: [0, 0.3, 0] },
     { p: 0.68, pos: [6.6, 6.0, 8.6], look: [0, 0.5, 0] },
@@ -429,12 +506,20 @@ import * as THREE from './vendor/three.module.min.js';
     const y = lerp(a.pos[1], b.pos[1], t) - my * 0.9;
     const z = lerp(a.pos[2], b.pos[2], t);
     camera.position.set(x, y, z);
-    camera.lookAt(
-      rig.position.x + lerp(a.look[0], b.look[0], t),
-      lerp(a.look[1], b.look[1], t),
-      lerp(a.look[2], b.look[2], t)
-    );
+    let lx = rig.position.x + lerp(a.look[0], b.look[0], t);
+    let ly = lerp(a.look[1], b.look[1], t);
+    let lz = lerp(a.look[2], b.look[2], t);
+    // the hero close-up keeps the off-center CPU framed as the scene turns
+    const w = 1 - stage(p, 0.05, 0.3);
+    if (w > 0) {
+      chip.getWorldPosition(chipWorld);
+      lx = lerp(lx, chipWorld.x, w);
+      ly = lerp(ly, chipWorld.y + 0.05, w);
+      lz = lerp(lz, chipWorld.z, w);
+    }
+    camera.lookAt(lx, ly, lz);
   }
+  const chipWorld = new THREE.Vector3();
 
   // ===== Input & layout =====
   let mx = 0, my = 0, scroll = 0;
