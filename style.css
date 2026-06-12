@@ -158,7 +158,7 @@ html.intro-pending body > *:not(#build-scene):not(.intro-skip) {
 }
 
 html.intro-fading body > *:not(#build-scene):not(.intro-skip) {
-  transition: opacity 1.2s ease 0.1s;
+  transition: opacity 0.55s ease;
 }
 
 .intro-skip {
