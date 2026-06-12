@@ -20,21 +20,19 @@ Shared assets: `style.css` (all pages except the resume), `script.js`
 `fonts/` (self-hosted Inter + JetBrains Mono), `vendor/` (self-hosted
 three.js module + license).
 
-### The 3D homepage chip build
+### The 3D build intro
 
-`build3d.js` renders a full-page scene behind the homepage that assembles
-a gaming PC as the visitor scrolls: it opens close on a glowing CPU die,
-circuit traces grow outward into an ATX-style motherboard (DDR slots,
-VRM heatsinks, chipset, PCIe slots, I/O shroud, and smaller fixtures
-appearing where the traces reach them), then RAM, an AIO liquid cooler
-(pump, hoses, and radiator), GPU, and PSU fly in and dock with power
-cables routed over the board edges, and the populated board tilts
-upright into a glass-paneled tower with case fans and glow strips. It is theme-aware
-(recolors on toggle), renders a single static frame under
-`prefers-reduced-motion`, pauses when the tab is hidden, and dims on
-phones for text contrast. If WebGL is unavailable it bails silently and
-the original 2D hero canvas in `script.js` takes over — don't remove the
-2D code path.
+`build3d.js` plays a ~5-second loading intro once per browser session:
+the page opens close on a glowing CPU, circuit traces grow outward into
+a true-scale ATX motherboard, RAM, an AIO liquid cooler, GPU, and PSU
+fly in and dock, the board tilts upright into a glass-paneled gaming
+tower — then the scene fades out, the site fades in, and the renderer is
+fully disposed. The head script in `index.html` hides the site before
+first paint (with a failsafe timeout) and `build3d.js` reveals it; a
+Skip button and Escape both end the intro early. It never plays under
+`prefers-reduced-motion`, without WebGL, or on repeat loads in the same
+session — in all those cases the site shows immediately with the 2D
+hero canvas from `script.js`, so don't remove the 2D code path.
 
 ## Editing content
 

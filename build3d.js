@@ -1,26 +1,40 @@
-// 3D chip build — scroll-driven homepage experience ("Build the Machine").
-// Opens close on a glowing CPU die; circuit traces grow outward into a
-// motherboard as you scroll (components sprouting where they land), then
-// the big parts fly in and dock — RAM, cooler, GPU, PSU — until a wireframe
-// case closes around the finished build. Falls back silently to the 2D hero
-// canvas in script.js when WebGL is unavailable, and renders a single
-// static frame under prefers-reduced-motion.
+// 3D chip build — the site's loading intro ("Build the Machine").
+// Plays once per browser session on page load: opens close on a glowing
+// CPU, circuit traces grow outward into the motherboard, the parts fly in
+// and dock — RAM, AIO, GPU, PSU — the board tilts upright into a gaming
+// tower, then the scene fades out and the site fades in. Skippable via
+// the Skip button or Escape. Never plays under prefers-reduced-motion or
+// without WebGL (the 2D hero canvas in script.js covers those visits),
+// and the whole scene is disposed after it finishes.
 import * as THREE from './vendor/three.module.min.js';
 
 (() => {
-  const container = document.getElementById('build-scene');
-  if (!container) return;
+  const html = document.documentElement;
+  const showSite = () => html.classList.remove('intro-pending', 'intro-fading');
 
+  const container = document.getElementById('build-scene');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let played = false;
+  try { played = !!sessionStorage.getItem('hb-intro-played'); } catch { /* storage blocked */ }
+
+  // The intro plays once per session, never under reduced motion, and only
+  // with WebGL; in every other case the site shows normally with the 2D
+  // hero canvas from script.js.
+  if (!container || reducedMotion || played) {
+    showSite();
+    return;
+  }
 
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   } catch {
-    return; // no WebGL — the 2D hero canvas in script.js stays active
+    showSite();
+    return;
   }
+  try { sessionStorage.setItem('hb-intro-played', '1'); } catch { /* storage blocked */ }
 
-  // 3D is live: retire the 2D fallback canvas
+  // The intro owns the screen; the 2D hero canvas comes back afterward
   const canvas2d = document.getElementById('hero-canvas');
   if (canvas2d) canvas2d.style.display = 'none';
 
@@ -632,63 +646,81 @@ import * as THREE from './vendor/three.module.min.js';
   }
   const chipWorld = new THREE.Vector3();
 
-  // ===== Input & layout =====
-  let mx = 0, my = 0, scroll = 0;
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-  if (finePointer && !reducedMotion) {
-    addEventListener('mousemove', (e) => {
-      mx = e.clientX / innerWidth - 0.5;
-      my = e.clientY / innerHeight - 0.5;
-    });
+  // ===== Input =====
+  let mx = 0, my = 0;
+  function onMouse(e) {
+    mx = e.clientX / innerWidth - 0.5;
+    my = e.clientY / innerHeight - 0.5;
+  }
+  if (window.matchMedia('(pointer: fine)').matches) {
+    addEventListener('mousemove', onMouse);
   }
 
-  function onScroll() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    scroll = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
-  }
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  function layout() {
-    const phone = innerWidth < 600;
-    rig.position.x = phone ? 0 : 2.2;
-    // Keep body copy readable over the scene on narrow screens
-    container.style.opacity = phone ? '0.45' : '1';
-  }
-  layout();
-
-  addEventListener('resize', () => {
+  function onResize() {
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
-    layout();
-  });
+  }
+  addEventListener('resize', onResize);
 
-  // ===== Render =====
-  let sp = scroll; // smoothed scroll progress
+  // ===== Skip controls =====
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'intro-skip';
+  skipBtn.type = 'button';
+  skipBtn.textContent = 'Skip intro';
+  document.body.appendChild(skipBtn);
+  skipBtn.addEventListener('click', () => finish(true));
+  function onKey(e) {
+    if (e.key === 'Escape') finish(true);
+  }
+  addEventListener('keydown', onKey);
+
+  // ===== Intro timeline =====
+  const INTRO_MS = 5000, HOLD_MS = 600;
+  let elapsed = 0, last = null, finished = false;
 
   function frame(t) {
+    if (last === null) last = t;
+    elapsed += Math.min(t - last, 100); // tab-away gaps don't fast-forward the build
+    last = t;
     const time = t * 0.001;
-    sp += (scroll - sp) * 0.06;
-    update(sp, time);
-    placeCamera(sp, mx, my);
+    const p = stage(Math.min(elapsed / INTRO_MS, 1), 0.04, 0.96);
+    update(p, time);
+    placeCamera(p, mx, my);
     renderer.render(scene, camera);
+    if (!finished && elapsed >= INTRO_MS + HOLD_MS) finish(false);
   }
 
-  if (reducedMotion) {
-    // Single static frame; re-render only on scroll (no smoothing) and theme change
-    const still = () => {
-      update(scroll, 0);
-      placeCamera(scroll, 0, 0);
-      renderer.render(scene, camera);
-    };
-    still();
-    addEventListener('scroll', still, { passive: true });
-    document.addEventListener('themechange', still);
-  } else {
-    renderer.setAnimationLoop(frame);
-    document.addEventListener('visibilitychange', () => {
-      renderer.setAnimationLoop(document.hidden ? null : frame);
-    });
+  function finish(skipped) {
+    if (finished) return;
+    finished = true;
+    skipBtn.disabled = true;
+    if (skipped) container.style.transition = 'opacity 0.45s ease';
+    container.style.opacity = '0';
+    // cross-fade: scene out, site content in
+    html.classList.add('intro-fading');
+    void document.body.offsetWidth;
+    html.classList.remove('intro-pending');
+    setTimeout(cleanup, skipped ? 500 : 1300);
   }
+
+  function cleanup() {
+    renderer.setAnimationLoop(null);
+    renderer.dispose();
+    container.remove();
+    skipBtn.remove();
+    removeEventListener('keydown', onKey);
+    removeEventListener('mousemove', onMouse);
+    removeEventListener('resize', onResize);
+    document.removeEventListener('themechange', applyPalette);
+    document.removeEventListener('visibilitychange', onVisibility);
+    if (canvas2d) canvas2d.style.display = '';
+    setTimeout(() => html.classList.remove('intro-fading'), 1400);
+  }
+
+  function onVisibility() {
+    if (!finished) renderer.setAnimationLoop(document.hidden ? null : frame);
+  }
+  renderer.setAnimationLoop(frame);
+  document.addEventListener('visibilitychange', onVisibility);
 })();
