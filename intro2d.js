@@ -251,8 +251,9 @@
 
     // ===== Timeline =====
     // traces 0–2s (flat overhead), dots rise 1.8–3.4s in a wave, camera
-    // sweeps 2.1–3.5s, dots settle onto the real type 3.3–4.2s, hold to 4.8s
-    const DRAW_MS = 2000, INTRO_MS = 4800;
+    // sweeps 2.1–3.5s, dots settle onto the real type 3.3–4.2s, then the
+    // handoff to the landing page is immediate
+    const DRAW_MS = 2000, INTRO_MS = 4250;
     let elapsed = 0, last = null, finished = false, raf = 0;
 
     function frame(t) {
@@ -325,13 +326,13 @@
       if (finished) return;
       finished = true;
       skipBtn.disabled = true;
-      if (skipped) container.style.transition = 'opacity 0.45s ease';
+      // quick handoff — the settled dots and the real name swap in place
+      container.style.transition = 'opacity 0.5s ease';
       container.style.opacity = '0';
-      // cross-fade: the settled dots and the real name swap in place
       html.classList.add('intro-fading');
       void document.body.offsetWidth;
       html.classList.remove('intro-pending');
-      setTimeout(cleanup, skipped ? 500 : 1300);
+      setTimeout(cleanup, 600);
     }
 
     function cleanup() {
