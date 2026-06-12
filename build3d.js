@@ -86,6 +86,10 @@ import * as THREE from './vendor/three.module.min.js';
     mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), mats.edge));
     return mesh;
   };
+  const tube = (pts, r) => new THREE.Mesh(
+    new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(...p))), 24, r, 8),
+    mats.body
+  );
 
   const rig = new THREE.Group();
   scene.add(rig);
@@ -286,6 +290,16 @@ import * as THREE from './vendor/three.module.min.js';
     m.position.set(2.2, 0.17, 3.2);
     detail(0.76, m);
   }
+  // power cables bend over the board edges to behind the tray; anchoring
+  // each group at its connector keeps the pop-in scale centered there
+  function cableAt(x, z, pts, r, t) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, z);
+    g.add(tube(pts, r));
+    detail(t, g);
+  }
+  cableAt(3.85, -0.4, [[0, 0.45, 0], [0.5, 0.4, 0], [0.7, -0.2, 0]], 0.09, 0.54); // 24-pin ATX
+  cableAt(-3.0, -3.1, [[0, 0.3, 0], [0, 0.35, -0.45], [0, -0.25, -0.6]], 0.07, 0.62); // 8-pin EPS
 
   // ===== Phase 2: components fly in and dock =====
   const parts = [];
@@ -336,24 +350,47 @@ import * as THREE from './vendor/three.module.min.js';
     popParts.push({ mesh: cap, s: 0.36 + i * 0.018, e: 0.44 + i * 0.018 });
   }
 
-  // Cooler descends onto the CPU
+  // AIO liquid cooler descends onto the CPU as one assembly: pump block on
+  // the socket, hoses arcing to a radiator along the board's top edge
+  // (which reads as a top-mounted radiator once the board tilts upright)
   {
     const g = new THREE.Group();
-    for (let i = 0; i < 4; i++) {
-      const fin = edged(new THREE.Mesh(new THREE.BoxGeometry(1.5 - i * 0.06, 0.07, 1.5 - i * 0.06), mats.metal));
-      fin.position.y = 0.1 + i * 0.16;
-      g.add(fin);
-    }
-    const rec = part(g, new THREE.Vector3(CX, 4.2, CZ), new THREE.Vector3(CX, 0.18, CZ), 0.44, 0.58);
-    g.add(fan(0.55, 0.85, 0, 0, rec));
+    const pump = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.3, 24), mats.body);
+    pump.position.y = 0.2;
+    const pumpRing = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 8, 32), mats.glow);
+    pumpRing.rotation.x = Math.PI / 2;
+    pumpRing.position.y = 0.36;
+    const rad = edged(new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.26, 0.9), mats.metal));
+    rad.position.set(1.7, 0.17, -2.45);
+    g.add(pump, pumpRing, rad,
+      tube([[-0.1, 0.3, -0.35], [-0.5, 0.85, -1.4], [0.5, 0.3, -2.3]], 0.06),
+      tube([[0.25, 0.3, -0.3], [-0.1, 0.95, -1.5], [0.8, 0.3, -2.35]], 0.06));
+    part(g, new THREE.Vector3(CX, 4.2, CZ), new THREE.Vector3(CX, 0.04, CZ), 0.44, 0.58);
   }
 
   // GPU slides in over the PCIe slot
   {
     const g = new THREE.Group();
     g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.45, 1.15), mats.body)));
+    // RGB strip on the edge that faces up once the board is vertical
+    const ledStrip = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.05, 0.08), mats.glow);
+    ledStrip.position.set(0, 0.1, -0.61);
+    g.add(ledStrip);
     const rec = part(g, new THREE.Vector3(10, 0.55, 1.3), new THREE.Vector3(-2.0, 0.55, 1.3), 0.52, 0.66);
     g.add(fan(0.38, 0.27, -0.75, 0, rec), fan(0.38, 0.27, 0.75, 0, rec));
+  }
+
+  // Dual 8-pin GPU power cables drape from the card down toward the board's
+  // bottom edge — right into the PSU shroud once the board stands up
+  {
+    const gpuCables = new THREE.Group();
+    gpuCables.add(
+      tube([[-2.15, 0.62, 1.8], [-1.95, 0.4, 2.6], [-1.7, 0.25, 3.35]], 0.05),
+      tube([[-1.85, 0.62, 1.8], [-1.7, 0.45, 2.6], [-1.5, 0.25, 3.35]], 0.05)
+    );
+    gpuCables.scale.setScalar(0.001);
+    mobo.add(gpuCables);
+    popParts.push({ mesh: gpuCables, s: 0.67, e: 0.73 });
   }
 
   // PSU slides into the tower's bottom shroud (rig space — it belongs to
