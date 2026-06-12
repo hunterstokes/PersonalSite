@@ -23,13 +23,11 @@ three.js module + license).
 ### The 3D homepage helix
 
 `helix3d.js` renders a full-page DNA helix behind the homepage; the camera
-rides down the strand as the visitor scrolls and an orange scanner band
-tracks the position (with the "Scanning · N%" readout bottom-left). It is
-theme-aware (recolors on toggle), renders a single static frame under
-`prefers-reduced-motion`, pauses when the tab is hidden, and dims on
-phones for text contrast. If WebGL is unavailable it bails silently and
-the original 2D hero canvas in `script.js` takes over — don't remove the
-2D code path.
+rides down the strand as the visitor scrolls. It is theme-aware (recolors
+on toggle), renders a single static frame under `prefers-reduced-motion`,
+pauses when the tab is hidden, and dims on phones for text contrast. If
+WebGL is unavailable it bails silently and the original 2D hero canvas in
+`script.js` takes over — don't remove the 2D code path.
 
 ## Editing content
 

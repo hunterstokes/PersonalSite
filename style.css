@@ -146,55 +146,8 @@ a:hover {
   display: block;
 }
 
-.scan-readout {
-  position: fixed;
-  left: 2rem;
-  bottom: 2rem;
-  z-index: 90;
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  line-height: 2;
-  pointer-events: none;
-}
-
-.scan-readout #scan-pct {
-  color: var(--orange);
-}
-
-.scan-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--orange);
-  margin-right: 0.45rem;
-  animation: scanPulse 2s infinite;
-}
-
-@keyframes scanPulse {
-  50% { opacity: 0.3; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scan-dot {
-    animation: none;
-  }
-}
-
-@media (max-width: 600px) {
-  .scan-readout {
-    left: 1.25rem;
-    bottom: 1.25rem;
-    font-size: 0.6rem;
-  }
-}
-
 @media print {
-  #helix-scene,
-  .scan-readout {
+  #helix-scene {
     display: none;
   }
 }

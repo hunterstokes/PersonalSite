@@ -1,8 +1,7 @@
 // 3D DNA helix — scroll-driven homepage experience ("Scroll the Sequence").
-// The camera rides down the strand as the page scrolls; an orange scanner
-// band tracks the position. Falls back silently to the 2D hero canvas in
-// script.js when WebGL is unavailable, and renders a single static frame
-// under prefers-reduced-motion.
+// The camera rides down the strand as the page scrolls. Falls back silently
+// to the 2D hero canvas in script.js when WebGL is unavailable, and renders
+// a single static frame under prefers-reduced-motion.
 import * as THREE from './vendor/three.module.min.js';
 
 (() => {
@@ -18,13 +17,9 @@ import * as THREE from './vendor/three.module.min.js';
     return; // no WebGL — the 2D hero canvas in script.js stays active
   }
 
-  // 3D is live: retire the 2D fallback canvas and show the scan readout
+  // 3D is live: retire the 2D fallback canvas
   const canvas2d = document.getElementById('hero-canvas');
   if (canvas2d) canvas2d.style.display = 'none';
-  const readout = document.getElementById('scan-readout');
-  if (readout) readout.hidden = false;
-  const scanPct = document.getElementById('scan-pct');
-  const scanPos = document.getElementById('scan-pos');
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100);
@@ -62,8 +57,6 @@ import * as THREE from './vendor/three.module.min.js';
     polyB: new THREE.MeshBasicMaterial({ wireframe: true }),
     spriteA: new THREE.SpriteMaterial({ transparent: true, opacity: 0.9 }),
     spriteB: new THREE.SpriteMaterial({ transparent: true, opacity: 0.55 }),
-    scan: new THREE.MeshBasicMaterial(),
-    scanGlow: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.09, side: THREE.DoubleSide }),
     particles: new THREE.PointsMaterial({ size: 0.05, transparent: true, opacity: 0.35 })
   };
 
@@ -71,7 +64,6 @@ import * as THREE from './vendor/three.module.min.js';
     const dark = document.documentElement.getAttribute('data-theme') !== 'light';
     const accent = cssVar('--accent', '#4a9eff');
     const muted = cssVar('--text-muted', '#8a8f9d');
-    const orange = cssVar('--orange', '#f0913a');
     const line = dark ? '#2a3550' : '#b9c6da';
 
     scene.fog = new THREE.Fog(new THREE.Color(cssVar('--bg', dark ? '#0f1115' : '#f4f6f9')), 9, 30);
@@ -86,8 +78,6 @@ import * as THREE from './vendor/three.module.min.js';
     mats.spriteB.map = glowTexture(dark ? '#aab2c4' : muted);
     mats.spriteA.needsUpdate = true;
     mats.spriteB.needsUpdate = true;
-    mats.scan.color.set(orange);
-    mats.scanGlow.color.set(orange);
     mats.particles.color.set(accent);
   }
   applyPalette();
@@ -147,16 +137,6 @@ import * as THREE from './vendor/three.module.min.js';
     helix.add(ring);
   }
 
-  // Scanner band — tracks scroll position down the strand
-  const scanner = new THREE.Group();
-  const scanRing = new THREE.Mesh(new THREE.TorusGeometry(RADIUS + 0.7, 0.03, 8, 90), mats.scan);
-  scanRing.rotation.x = Math.PI / 2;
-  const scanGlow = new THREE.Mesh(
-    new THREE.CylinderGeometry(RADIUS + 0.7, RADIUS + 0.7, 0.6, 48, 1, true),
-    mats.scanGlow
-  );
-  scanner.add(scanRing, scanGlow);
-  helix.add(scanner);
   scene.add(helix);
 
   // Ambient particles for depth
@@ -179,8 +159,6 @@ import * as THREE from './vendor/three.module.min.js';
   function onScroll() {
     const max = document.documentElement.scrollHeight - innerHeight;
     scroll = max > 0 ? Math.min(Math.max(scrollY / max, 0), 1) : 0;
-    if (scanPct) scanPct.textContent = `Scanning · ${Math.round(scroll * 100)}%`;
-    if (scanPos) scanPos.textContent = String(Math.round(scroll * PAIRS));
   }
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -214,7 +192,6 @@ import * as THREE from './vendor/three.module.min.js';
     camera.lookAt(helix.position.x, camY, 0);
 
     helix.rotation.y = time * 0.1 + scroll * Math.PI * 2.2;
-    scanner.position.y = camY;
 
     for (let i = 0; i < spinners.length; i++) {
       spinners[i].rotation.x = time * 0.6 + i;
@@ -225,14 +202,10 @@ import * as THREE from './vendor/three.module.min.js';
 
   if (reducedMotion) {
     // Single static frame; re-render only on scroll (no smoothing) and theme change
-    camY = TOP;
-    scanner.position.y = TOP;
-    renderer.render(scene, camera);
     const still = () => {
       camY = TOP - scroll * TRAVEL;
       camera.position.y = camY;
       camera.lookAt(helix.position.x, camY, 0);
-      scanner.position.y = camY;
       renderer.render(scene, camera);
     };
     still();
