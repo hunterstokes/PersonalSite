@@ -55,6 +55,8 @@ import * as THREE from './vendor/three.module.min.js';
     body: new THREE.MeshLambertMaterial(),
     metal: new THREE.MeshLambertMaterial(),
     gold: new THREE.MeshLambertMaterial({ color: '#c9a14f' }),
+    // real hardware is black regardless of site theme
+    hw: new THREE.MeshLambertMaterial({ color: '#16181d' }),
     glow: new THREE.MeshBasicMaterial(),
     halo: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.55 }),
     edge: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.45 }),
@@ -90,6 +92,16 @@ import * as THREE from './vendor/three.module.min.js';
     new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((p) => new THREE.Vector3(...p))), 24, r, 8),
     mats.body
   );
+  function textTexture(w, h, draw) {
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    draw(ctx);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.anisotropy = 4;
+    return { tex, ctx };
+  }
 
   const rig = new THREE.Group();
   scene.add(rig);
@@ -105,9 +117,30 @@ import * as THREE from './vendor/three.module.min.js';
 
   const chip = new THREE.Group();
   chip.add(edged(new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.18, 1.15), mats.body)));
-  const die = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.5), mats.glow);
-  die.position.y = 0.12;
+  // accent glow spills out from under the printed heat spreader
+  const die = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.04, 1.0), mats.glow);
+  die.position.y = 0.1;
   chip.add(die);
+  const ihs = textTexture(256, 256, (ctx) => {
+    ctx.fillStyle = '#262b35';
+    ctx.fillRect(0, 0, 256, 256);
+    ctx.strokeStyle = '#3a4150';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(10, 10, 236, 236);
+    ctx.fillStyle = '#cfd6e4';
+    ctx.textAlign = 'center';
+    ctx.font = '26px monospace';
+    ctx.fillText('AMD RYZEN 7', 128, 105);
+    ctx.font = 'bold 40px monospace';
+    ctx.fillText('9800X3D', 128, 152);
+    ctx.fillStyle = '#7b8496';
+    ctx.font = '20px monospace';
+    ctx.fillText('AM5', 128, 205);
+  });
+  const ihsPlate = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 0.95), new THREE.MeshBasicMaterial({ map: ihs.tex }));
+  ihsPlate.rotation.x = -Math.PI / 2;
+  ihsPlate.position.y = 0.125;
+  chip.add(ihsPlate);
   const halo = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.015, 8, 64), mats.halo);
   halo.rotation.x = Math.PI / 2;
   halo.position.y = 0.12;
@@ -329,15 +362,17 @@ import * as THREE from './vendor/three.module.min.js';
     return g;
   }
 
-  // RAM sticks drop into their slots
-  for (let i = 0; i < 4; i++) {
+  // Two 32GB Vengeance RGB sticks drop into slots 2 and 4 (A2/B2);
+  // the other two slots stay empty, like the real build
+  const ramRGB = new THREE.MeshBasicMaterial();
+  for (const [i, x] of [[0, 2.35], [1, 2.95]]) {
     const g = new THREE.Group();
-    const stick = edged(new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 2.3), mats.body));
-    const clip = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.1, 2.3), mats.glow);
-    clip.position.y = 0.52;
-    g.add(stick, clip);
-    part(g, new THREE.Vector3(2.05 + i * 0.3, 4.5, -1.0), new THREE.Vector3(2.05 + i * 0.3, 0.62, -1.0),
-      0.34 + i * 0.03, 0.46 + i * 0.03);
+    const stick = edged(new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 2.3), mats.hw));
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.1, 2.25), ramRGB);
+    bar.position.y = 0.52;
+    g.add(stick, bar);
+    part(g, new THREE.Vector3(x, 4.5, -1.0), new THREE.Vector3(x, 0.62, -1.0),
+      0.34 + i * 0.04, 0.46 + i * 0.04);
   }
 
   // VRM capacitors pop up beside the CPU
@@ -353,13 +388,32 @@ import * as THREE from './vendor/three.module.min.js';
   // AIO liquid cooler descends onto the CPU as one assembly: pump block on
   // the socket, hoses arcing to a radiator along the board's top edge
   // (which reads as a top-mounted radiator once the board tilts upright)
+  let lcdDraw = null, lcdTemp = 0;
   {
     const g = new THREE.Group();
-    const pump = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.3, 24), mats.body);
+    const pump = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.3, 24), mats.hw);
     pump.position.y = 0.2;
-    const pumpRing = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 8, 32), mats.glow);
+    const pumpRing = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.03, 8, 32), mats.glow);
     pumpRing.rotation.x = Math.PI / 2;
     pumpRing.position.y = 0.36;
+    // pump-cap LCD shows CPU temperature (faces the glass once vertical)
+    const lcd = textTexture(128, 128, () => {});
+    const lcdFace = new THREE.Mesh(new THREE.CircleGeometry(0.27, 32), new THREE.MeshBasicMaterial({ map: lcd.tex }));
+    lcdFace.rotation.x = -Math.PI / 2;
+    lcdFace.position.y = 0.366;
+    lcdDraw = (temp) => {
+      lcd.ctx.fillStyle = '#05070c';
+      lcd.ctx.fillRect(0, 0, 128, 128);
+      lcd.ctx.fillStyle = '#4a9eff';
+      lcd.ctx.textAlign = 'center';
+      lcd.ctx.font = 'bold 50px monospace';
+      lcd.ctx.fillText(temp + '°', 64, 72);
+      lcd.ctx.fillStyle = '#7b8496';
+      lcd.ctx.font = '18px monospace';
+      lcd.ctx.fillText('CPU', 64, 100);
+      lcd.tex.needsUpdate = true;
+    };
+    g.add(lcdFace);
     const rad = edged(new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.26, 0.9), mats.metal));
     rad.position.set(1.7, 0.17, -2.45);
     g.add(pump, pumpRing, rad,
@@ -371,11 +425,28 @@ import * as THREE from './vendor/three.module.min.js';
   // GPU slides in over the PCIe slot
   {
     const g = new THREE.Group();
-    g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.45, 1.15), mats.body)));
-    // RGB strip on the edge that faces up once the board is vertical
-    const ledStrip = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.05, 0.08), mats.glow);
-    ledStrip.position.set(0, 0.1, -0.61);
-    g.add(ledStrip);
+    g.add(edged(new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.45, 1.15), mats.hw)));
+    // Radeon red stripe and model label on the edge that faces up through
+    // the glass once the board is vertical
+    const radeonRed = new THREE.MeshBasicMaterial({ color: '#e8232f' });
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.06, 0.05), radeonRed);
+    stripe.position.set(0, -0.14, -0.59);
+    const lbl = textTexture(512, 96, (ctx) => {
+      ctx.clearRect(0, 0, 512, 96);
+      ctx.fillStyle = '#e8232f';
+      ctx.fillRect(14, 30, 44, 36);
+      ctx.fillStyle = '#f2f4f8';
+      ctx.textAlign = 'left';
+      ctx.font = 'bold 44px sans-serif';
+      ctx.fillText('RADEON', 76, 62);
+      ctx.fillStyle = '#9aa3b5';
+      ctx.font = '28px sans-serif';
+      ctx.fillText('RX 7800 XT', 290, 60);
+    });
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.41), new THREE.MeshBasicMaterial({ map: lbl.tex, transparent: true }));
+    label.rotation.y = Math.PI;
+    label.position.set(0, 0.06, -0.578);
+    g.add(stripe, label);
     const rec = part(g, new THREE.Vector3(10, 0.55, 1.3), new THREE.Vector3(-2.0, 0.55, 1.3), 0.52, 0.66);
     g.add(fan(0.38, 0.27, -0.75, 0, rec), fan(0.38, 0.27, 0.75, 0, rec));
   }
@@ -523,6 +594,12 @@ import * as THREE from './vendor/three.module.min.js';
     mats.ring.opacity = 0.5 * rt;
 
     halo.scale.setScalar(1 + 0.05 * Math.sin(time * 2));
+    ramRGB.color.setHSL((0.72 + time * 0.05) % 1, 0.65, 0.6);
+    const temp = 38 + Math.round(3 * Math.sin(time * 0.2));
+    if (lcdDraw && temp !== lcdTemp) {
+      lcdDraw(temp);
+      lcdTemp = temp;
+    }
     rig.rotation.y = time * 0.05 + p * 0.5;
   }
 
