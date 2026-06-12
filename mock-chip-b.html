@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  body{margin:0;background:#0b0f17;color:#8a93a6;font-family:ui-monospace,Menlo,monospace}
+  header{padding:14px 20px;border-bottom:1px solid #1c2738}
+  h1{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#e8edf6;margin:0}
+  header p{font-size:11px;margin:5px 0 0;letter-spacing:.06em}
+  .row{display:flex;gap:14px;padding:14px 20px}
+  .panel{flex:1;border:1px solid #1c2738;border-radius:6px;overflow:hidden}
+  .view{height:600px}
+  .cap{padding:9px 12px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;border-top:1px solid #1c2738;color:#4a9eff}
+  .cap span{color:#8a93a6;text-transform:none;letter-spacing:.04em}
+</style></head>
+<body>
+<header><h1>Concept B — Circuit Growth</h1>
+<p>Circuit traces grow outward from the chip like a city being printed; components materialize as wireframes where the traces land, then solidify. Camera lifts from die close-up to a full board overview.</p></header>
+<div class="row">
+  <div class="panel"><div class="view" data-p="0"></div><div class="cap">Hero · 0% <span>— the die wakes up, first traces spark</span></div></div>
+  <div class="panel"><div class="view" data-p="0.5"></div><div class="cap">Mid-scroll · 50% <span>— network spreading, parts materializing</span></div></div>
+  <div class="panel"><div class="view" data-p="1"></div><div class="cap">Contact · 100% <span>— the full board, alive</span></div></div>
+</div>
+<script type="module">
+import * as THREE from './vendor/three.module.min.js';
+
+const BG = '#0b0f17', ACCENT = 0x4a9eff;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp01=x=>Math.min(Math.max(x,0),1);
+const stage=(p,s,e)=>{const t=clamp01((p-s)/(e-s));return t*t*(3-2*t);};
+// deterministic rng so every panel shows the same layout
+function rng(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+
+function build(el,p){
+  const w=el.clientWidth,h=el.clientHeight;
+  const renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(w,h);renderer.setPixelRatio(1);
+  el.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(BG);
+  scene.fog=new THREE.Fog(BG,15,32);
+  const camera=new THREE.PerspectiveCamera(45,w/h,0.1,100);
+
+  scene.add(new THREE.AmbientLight(0x8899bb,0.85));
+  const key=new THREE.DirectionalLight(0xffffff,1.0);key.position.set(4,9,5);scene.add(key);
+  const rim=new THREE.DirectionalLight(ACCENT,0.5);rim.position.set(-5,4,-6);scene.add(rim);
+
+  const grid=new THREE.GridHelper(40,40,0x1c2940,0x121a28);
+  grid.position.y=-0.6;scene.add(grid);
+
+  const mDark=new THREE.MeshLambertMaterial({color:0x1a2230});
+  const mMetal=new THREE.MeshLambertMaterial({color:0x6b7686});
+  const mGlow=new THREE.MeshBasicMaterial({color:ACCENT});
+  const mWire=new THREE.LineBasicMaterial({color:ACCENT,transparent:true,opacity:0.7});
+  const mEdge=new THREE.LineBasicMaterial({color:ACCENT,transparent:true,opacity:0.4});
+  const edged=m=>{m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),mEdge));return m;};
+  const wireOnly=g=>new THREE.LineSegments(new THREE.EdgesGeometry(g),mWire);
+
+  // board fades/extends with growth
+  const f=Math.max(stage(p,0,0.95),0.05); // growth fraction
+  const board=edged(new THREE.Mesh(new THREE.BoxGeometry(9,0.16,7),new THREE.MeshLambertMaterial({color:0x101e33,transparent:true,opacity:lerp(0.25,1,f)})));
+  scene.add(board);
+
+  // central chip, always present, die glows
+  const chip=new THREE.Group();
+  chip.add(edged(new THREE.Mesh(new THREE.BoxGeometry(1.15,0.18,1.15),mDark)));
+  const die=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.08,0.5),mGlow);die.position.y=0.12;chip.add(die);
+  const halo=new THREE.Mesh(new THREE.TorusGeometry(0.95,0.015,8,64),new THREE.MeshBasicMaterial({color:ACCENT,transparent:true,opacity:0.6}));
+  halo.rotation.x=Math.PI/2;halo.position.y=0.12;chip.add(halo);
+  chip.position.y=0.09;scene.add(chip);
+
+  // Manhattan traces growing outward from the chip
+  const rand=rng(1337);
+  const traces=[];
+  for(let i=0;i<64;i++){
+    const side=i%4, segs=[], n=2+Math.floor(rand()*3);
+    let x=(rand()-0.5)*1.0, z=(rand()-0.5)*1.0;
+    if(side===0)x=0.62;if(side===1)x=-0.62;if(side===2)z=0.62;if(side===3)z=-0.62;
+    let horiz=(side<2);
+    for(let s=0;s<n;s++){
+      const len=(0.6+rand()*1.9)*(s===0?1.4:1);
+      let nx=x,nz=z;
+      if(horiz)nx=clampTo(x+(side===1?-len:side===0?len:(rand()<0.5?-len:len)),4.2);
+      else nz=clampTo(z+(side===3?-len:side===2?len:(rand()<0.5?-len:len)),3.2);
+      segs.push([x,z,nx,nz]);x=nx;z=nz;horiz=!horiz;
+    }
+    traces.push({segs,end:[x,z],order:rand()});
+  }
+  function clampTo(v,m){return Math.min(Math.max(v,-m),m);}
+  traces.sort((a,b)=>a.order-b.order);
+
+  const totalSegs=traces.reduce((s,t)=>s+t.segs.length,0);
+  let budget=Math.max(Math.floor(totalSegs*f),3);
+  const linePts=[],tips=[];
+  for(const t of traces){
+    if(budget<=0)break;
+    const take=Math.min(t.segs.length,budget);
+    for(let s=0;s<take;s++){
+      const[a,b,c,d]=t.segs[s];
+      linePts.push(a,0.12,b,c,0.12,d);
+    }
+    budget-=take;
+    t.drawn=take===t.segs.length;
+    if(!t.drawn||f<0.98){const[a,b,c,d]=t.segs[take-1];tips.push(c,0.12,d);}
+  }
+  const lg=new THREE.BufferGeometry();
+  lg.setAttribute('position',new THREE.Float32BufferAttribute(linePts,3));
+  scene.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:ACCENT,transparent:true,opacity:0.55})));
+  // glowing tips at the active trace ends
+  const tg=new THREE.BufferGeometry();
+  tg.setAttribute('position',new THREE.Float32BufferAttribute(tips,3));
+  scene.add(new THREE.Points(tg,new THREE.PointsMaterial({color:ACCENT,size:0.09,transparent:true,opacity:0.9})));
+
+  // small parts sprout where finished traces end
+  const rand2=rng(777);
+  for(const t of traces){
+    if(!t.drawn)continue;
+    const kind=rand2();
+    let mesh;
+    if(kind<0.45)mesh=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.26,10),mMetal);
+    else if(kind<0.8)mesh=edged(new THREE.Mesh(new THREE.BoxGeometry(0.3+rand2()*0.3,0.1,0.25+rand2()*0.25),mDark));
+    else mesh=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.18,0.12),mGlow);
+    mesh.position.set(t.end[0],0.2,t.end[1]);
+    scene.add(mesh);
+  }
+
+  // landmark parts: wireframe first, then solid
+  const landmarks=[
+    {t:0.4, build:()=>{const g=new THREE.Group();for(let i=0;i<2;i++){const r=edged(new THREE.Mesh(new THREE.BoxGeometry(0.16,0.5,2.6),mDark));r.position.set(2.9+i*0.34,0.32,-1.2);g.add(r);}return g;},
+      wire:()=>{const g=new THREE.Group();for(let i=0;i<2;i++){const r=wireOnly(new THREE.BoxGeometry(0.16,0.5,2.6));r.position.set(2.9+i*0.34,0.32,-1.2);g.add(r);}return g;}},
+    {t:0.55,build:()=>{const m=edged(new THREE.Mesh(new THREE.BoxGeometry(1.0,0.22,1.0),mDark));m.position.set(-2.4,0.18,1.8);return m;},
+      wire:()=>{const m=wireOnly(new THREE.BoxGeometry(1.0,0.22,1.0));m.position.set(-2.4,0.18,1.8);return m;}},
+    {t:0.7, build:()=>{const g=new THREE.Group();for(let i=0;i<3;i++){const c=edged(new THREE.Mesh(new THREE.BoxGeometry(0.5,0.4,0.5),mMetal));c.position.set(-3.2+i*0.65,0.3,-2.9);g.add(c);}return g;},
+      wire:()=>{const g=new THREE.Group();for(let i=0;i<3;i++){const c=wireOnly(new THREE.BoxGeometry(0.5,0.4,0.5));c.position.set(-3.2+i*0.65,0.3,-2.9);g.add(c);}return g;}},
+    {t:0.85,build:()=>{const m=edged(new THREE.Mesh(new THREE.BoxGeometry(3.0,0.3,0.5),mDark));m.position.set(0.4,0.22,2.9);const s=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.06,0.2),mGlow);s.position.set(0.4,0.4,2.9);const g=new THREE.Group();g.add(m,s);return g;},
+      wire:()=>{const m=wireOnly(new THREE.BoxGeometry(3.0,0.3,0.5));m.position.set(0.4,0.22,2.9);return m;}}
+  ];
+  for(const lm of landmarks){
+    if(f>=lm.t)scene.add(lm.build());
+    else if(f>=lm.t-0.18)scene.add(lm.wire());
+  }
+
+  // closing accents: caliper ring + corner brackets at full growth
+  const endT=stage(p,0.82,1);
+  if(endT>0){
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(5.6,0.018,8,90),new THREE.MeshBasicMaterial({color:ACCENT,transparent:true,opacity:0.55*endT}));
+    ring.rotation.x=Math.PI/2;ring.position.y=0.4;scene.add(ring);
+  }
+
+  // ambient particles
+  const pn=110,pos=new Float32Array(pn*3),r3=rng(42);
+  for(let i=0;i<pn;i++){pos[i*3]=(r3()-0.5)*20;pos[i*3+1]=r3()*9-0.5;pos[i*3+2]=(r3()-0.5)*16;}
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:ACCENT,size:0.05,transparent:true,opacity:0.28})));
+
+  // camera lifts from die close-up to board overview
+  const cp=stage(p,0,1);
+  camera.position.set(lerp(1.5,6.8,cp),lerp(1.7,7.6,cp),lerp(1.5,6.8,cp));
+  camera.lookAt(0,0.1,0);
+  renderer.render(scene,camera);
+}
+
+document.querySelectorAll('.view').forEach(el=>build(el,parseFloat(el.dataset.p)));
+</script>
+</body></html>
