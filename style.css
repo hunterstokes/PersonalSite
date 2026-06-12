@@ -196,6 +196,61 @@ html.intro-fading body > *:not(#build-scene):not(.intro-skip) {
   }
 }
 
+/* ===== 3D tower viewer (builds.html) ===== */
+.tower-viewer-wrap {
+  margin: 0 0 3rem;
+}
+
+#tower-viewer {
+  height: 440px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  display: grid;
+  place-items: center;
+}
+
+#tower-viewer:active {
+  cursor: grabbing;
+}
+
+#tower-viewer canvas {
+  display: block;
+}
+
+.tower-fallback {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.tower-hint {
+  margin-top: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  #tower-viewer {
+    height: 320px;
+  }
+}
+
+/* ===== Cross-document view transitions (progressive enhancement) ===== */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
 /* ===== Scroll Progress ===== */
 .scroll-progress {
   position: fixed;
@@ -1037,6 +1092,23 @@ html.intro-fading body > *:not(#build-scene):not(.intro-skip) {
 .footer-built {
   font-family: var(--mono);
   font-size: 0.72rem;
+}
+
+.footer-replay {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-replay:hover {
+  color: var(--accent);
 }
 
 /* ===== Animations ===== */

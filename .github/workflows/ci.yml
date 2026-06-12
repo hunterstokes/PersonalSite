@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax-check JavaScript
+        run: |
+          for f in *.js test/*.mjs; do
+            node --check "$f"
+          done
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Smoke test
+        run: node test/smoke.mjs

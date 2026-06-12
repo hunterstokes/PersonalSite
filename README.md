@@ -20,19 +20,41 @@ Shared assets: `style.css` (all pages except the resume), `script.js`
 `fonts/` (self-hosted Inter + JetBrains Mono), `vendor/` (self-hosted
 three.js module + license).
 
-### The 3D build intro
+### The 3D PC model
 
-`build3d.js` plays a ~5-second loading intro once per browser session:
-the page opens close on a glowing CPU, circuit traces grow outward into
-a true-scale ATX motherboard, RAM, an AIO liquid cooler, GPU, and PSU
-fly in and dock, the board tilts upright into a glass-paneled gaming
-tower — then the scene fades out, the site fades in, and the renderer is
-fully disposed. The head script in `index.html` hides the site before
-first paint (with a failsafe timeout) and `build3d.js` reveals it; a
-Skip button and Escape both end the intro early. It never plays under
-`prefers-reduced-motion`, without WebGL, or on repeat loads in the same
-session — in all those cases the site shows immediately with the 2D
-hero canvas from `script.js`, so don't remove the 2D code path.
+`pcscene.js` is the single source of truth for the 3D gaming rig — a
+true-scale ATX board that assembles from a lone CPU into a glass-paneled
+tower as its `update(p, time, spin)` progress runs 0→1. Two consumers:
+
+- **`build3d.js`** — the ~5-second loading intro, loaded on demand by
+  `intro-boot.js`. The boot script decides whether the intro will play
+  *before* downloading the ~750KB of three.js: once per browser session
+  (`sessionStorage`), never under `prefers-reduced-motion` or without
+  WebGL. The head script in `index.html` hides the site before first
+  paint (with a failsafe timeout); the intro fades the site in when it
+  finishes and disposes everything. Skip button and Escape end it early,
+  and the "Replay intro" control in the footer clears the session flag.
+- **`tower3d.js`** — the drag-to-orbit viewer of the finished rig on
+  `builds.html`, lazy-loaded by `tower-boot.js` only when the viewer
+  scrolls into view (and only with WebGL; the fallback text stays
+  otherwise).
+
+Visits that never load the 3D code get the 2D hero canvas from
+`script.js` — don't remove the 2D code path.
+
+### CI
+
+`.github/workflows/ci.yml` syntax-checks all JS and runs
+`test/smoke.mjs` (Playwright) on every PR: the intro lifecycle and
+teardown, both skip paths, reduced-motion bypass, the builds-page
+viewer, and console-error-free loads of every page. Run it locally with
+`npm i --no-save playwright && node test/smoke.mjs`.
+
+### Resume PDF
+
+`resume.pdf` is generated from `resume.html`'s print styles (headless
+Chrome → Letter, 0.5in margins). Regenerate it after editing the resume
+so the download link stays in sync.
 
 ## Editing content
 

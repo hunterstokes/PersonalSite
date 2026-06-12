@@ -91,53 +91,46 @@
       </p>
     </header>
 
-    <!--
-      PLACEHOLDER BUILDS: the specs below are sample data so the layout is ready.
-      Replace each value with your real parts and remove the "sample specs" badge
-      (<span class="build-badge">) once a card is updated.
-    -->
+    <!-- Interactive 3D model of the main rig (same model as the homepage intro) -->
+    <section class="tower-viewer-wrap" aria-label="Interactive 3D model of the main rig">
+      <div id="tower-viewer" role="img" aria-label="3D model of the main rig: a glass-paneled tower with an AIO cooler, RGB RAM, and a dual-fan graphics card">
+        <p class="tower-fallback">The interactive 3D model needs WebGL &mdash; full specs are below.</p>
+      </div>
+      <p class="tower-hint">The main rig, modeled part-for-part &mdash; drag to spin it.</p>
+    </section>
 
     <div class="builds-grid">
 
       <article class="build-card">
         <div class="build-card-top">
-          <span class="build-date">2024</span>
-          <span class="build-badge">Sample specs — update me</span>
+          <span class="build-date">Current</span>
         </div>
-        <h2>Daily Driver</h2>
+        <h2>Main Rig</h2>
         <p class="build-purpose">Gaming &amp; everyday workstation</p>
         <dl class="build-specs">
-          <div><dt>CPU</dt><dd>AMD Ryzen 7 7800X3D</dd></div>
-          <div><dt>GPU</dt><dd>NVIDIA RTX 4070 Super</dd></div>
-          <div><dt>RAM</dt><dd>32 GB DDR5-6000 CL30</dd></div>
-          <div><dt>Storage</dt><dd>2 TB NVMe Gen4</dd></div>
-          <div><dt>Cooling</dt><dd>240mm AIO</dd></div>
-          <div><dt>Case</dt><dd>Mid-tower, mesh front</dd></div>
-          <div><dt>PSU</dt><dd>750W 80+ Gold</dd></div>
+          <div><dt>CPU</dt><dd>AMD Ryzen 7 9800X3D</dd></div>
+          <div><dt>GPU</dt><dd>AMD Radeon RX 7800 XT</dd></div>
+          <div><dt>RAM</dt><dd>64 GB (2&times;32 GB) Corsair Vengeance RGB DDR5</dd></div>
+          <div><dt>Cooling</dt><dd>240mm AIO, LCD temp display</dd></div>
+          <div><dt>Platform</dt><dd>AM5</dd></div>
         </dl>
         <p class="build-notes">
-          Build notes go here — what you optimized for, what you'd do differently, thermals, noise, anything worth remembering.
+          The rig from the homepage intro &mdash; the 3D model above is this machine,
+          part for part. Full storage, case, and power details coming with proper
+          build photos.
         </p>
       </article>
 
       <article class="build-card">
         <div class="build-card-top">
-          <span class="build-date">2022</span>
-          <span class="build-badge">Sample specs — update me</span>
+          <span class="build-date">Planning</span>
         </div>
-        <h2>First Build</h2>
-        <p class="build-purpose">The one that started it all</p>
-        <dl class="build-specs">
-          <div><dt>CPU</dt><dd>AMD Ryzen 5 5600X</dd></div>
-          <div><dt>GPU</dt><dd>NVIDIA RTX 3060 Ti</dd></div>
-          <div><dt>RAM</dt><dd>16 GB DDR4-3600</dd></div>
-          <div><dt>Storage</dt><dd>1 TB NVMe Gen3</dd></div>
-          <div><dt>Cooling</dt><dd>Stock air cooler</dd></div>
-          <div><dt>Case</dt><dd>Budget ATX</dd></div>
-          <div><dt>PSU</dt><dd>650W 80+ Bronze</dd></div>
-        </dl>
+        <h2>Next Build</h2>
+        <p class="build-purpose">Parts shortlist in progress</p>
         <p class="build-notes">
-          The story of your first build — what surprised you, the mistake every first-timer makes, why it hooked you.
+          The next project is in the research phase &mdash; specs land here once
+          the parts are picked. Want to spec your own in the meantime?
+          <a href="guide.html">Try the interactive build guide &rarr;</a>
         </p>
       </article>
 
@@ -155,5 +148,6 @@
   </footer>
 
   <script src="script.js"></script>
+  <script type="module" src="tower-boot.js"></script>
 </body>
 </html>
