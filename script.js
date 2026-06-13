@@ -314,36 +314,42 @@ document.addEventListener('DOMContentLoaded', () => {
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      const cy = height * 0.5;
-      const amplitude = Math.min(height * 0.22, 130);
-      const margin = width * 0.04;
-      const span = width - margin * 2;
+      // portrait screens get a vertical helix so it runs the hero's length
+      const vertical = height > width;
+      const along = vertical ? height : width;
+      const cross = vertical ? width : height;
+      const c = cross * 0.5;
+      const amplitude = Math.min(cross * 0.22, 130);
+      const margin = along * 0.04;
+      const span = along - margin * 2;
 
       for (let i = 0; i <= BASE_PAIRS; i++) {
-        const x = margin + (span * i) / BASE_PAIRS;
+        const a = margin + (span * i) / BASE_PAIRS;
         const phase = (i / BASE_PAIRS) * Math.PI * 4 + t;
-        const y1 = cy + Math.sin(phase) * amplitude;
-        const y2 = cy + Math.sin(phase + Math.PI) * amplitude;
+        const o1 = c + Math.sin(phase) * amplitude;
+        const o2 = c + Math.sin(phase + Math.PI) * amplitude;
         // Depth from the strand crossing: rungs flatten and dim at crossover
         const depth = Math.abs(Math.sin(phase));
+        const x1 = vertical ? o1 : a, y1 = vertical ? a : o1;
+        const x2 = vertical ? o2 : a, y2 = vertical ? a : o2;
 
         ctx.strokeStyle = accent;
         ctx.globalAlpha = 0.10 + depth * 0.16;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x, y1);
-        ctx.lineTo(x, y2);
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
         ctx.stroke();
 
         ctx.globalAlpha = 0.25 + depth * 0.45;
         ctx.fillStyle = accent;
         ctx.beginPath();
-        ctx.arc(x, y1, 1.8 + depth * 1.4, 0, Math.PI * 2);
+        ctx.arc(x1, y1, 1.8 + depth * 1.4, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = muted;
         ctx.beginPath();
-        ctx.arc(x, y2, 1.8 + depth * 1.4, 0, Math.PI * 2);
+        ctx.arc(x2, y2, 1.8 + depth * 1.4, 0, Math.PI * 2);
         ctx.fill();
       }
 
