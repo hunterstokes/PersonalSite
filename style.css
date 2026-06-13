@@ -134,68 +134,136 @@ a:hover {
   }
 }
 
-/* ===== 3D Helix Scene ===== */
-#helix-scene {
+/* ===== 3D Build Intro ===== */
+#build-scene {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  transition: opacity 1s ease;
 }
 
-#helix-scene canvas {
+#build-scene canvas {
   display: block;
 }
 
-.scan-readout {
+/* Site stays hidden while the intro plays, then cross-fades in.
+   The intro-pending class is set before first paint by the head script. */
+html.intro-pending {
+  overflow: hidden;
+}
+
+html.intro-pending body > *:not(#build-scene):not(.intro-skip) {
+  opacity: 0;
+}
+
+html.intro-fading body > *:not(#build-scene):not(.intro-skip) {
+  transition: opacity 0.55s ease;
+}
+
+.intro-skip {
   position: fixed;
-  left: 2rem;
+  right: 2rem;
   bottom: 2rem;
-  z-index: 90;
+  z-index: 300;
   font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
-  line-height: 2;
+  background: transparent;
+  border: 1px solid var(--text-muted);
+  border-radius: 4px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, opacity 0.4s ease;
+}
+
+.intro-skip:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.intro-skip:disabled {
+  opacity: 0;
   pointer-events: none;
 }
 
-.scan-readout #scan-pct {
-  color: var(--orange);
-}
-
-.scan-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--orange);
-  margin-right: 0.45rem;
-  animation: scanPulse 2s infinite;
-}
-
-@keyframes scanPulse {
-  50% { opacity: 0.3; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scan-dot {
-    animation: none;
+@media print {
+  #build-scene,
+  .intro-skip {
+    display: none;
   }
+}
+
+/* ===== 3D tower viewer (builds.html) ===== */
+.tower-viewer-wrap {
+  margin: 0 0 3rem;
+}
+
+#tower-viewer {
+  height: 440px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 35%, transparent);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  display: grid;
+  place-items: center;
+}
+
+#tower-viewer:active {
+  cursor: grabbing;
+}
+
+#tower-viewer canvas {
+  display: block;
+}
+
+.tower-fallback {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.tower-hint {
+  margin-top: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.tower-rebuild {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 0.6rem;
+  cursor: pointer;
+}
+
+.tower-rebuild:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 600px) {
-  .scan-readout {
-    left: 1.25rem;
-    bottom: 1.25rem;
-    font-size: 0.6rem;
+  #tower-viewer {
+    height: 320px;
   }
 }
 
-@media print {
-  #helix-scene,
-  .scan-readout {
-    display: none;
+/* ===== Cross-document view transitions (progressive enhancement) ===== */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
   }
 }
 
@@ -1040,6 +1108,23 @@ a:hover {
 .footer-built {
   font-family: var(--mono);
   font-size: 0.72rem;
+}
+
+.footer-replay {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.footer-replay:hover {
+  color: var(--accent);
 }
 
 /* ===== Animations ===== */

@@ -16,20 +16,47 @@ Built with vanilla HTML, CSS, and JavaScript. No frameworks, no build step.
 
 Shared assets: `style.css` (all pages except the resume), `script.js`
 (theme, nav, reveals, spotlight, hero canvas, contact form), `game.js`
-(the game), `helix3d.js` (the scroll-driven 3D helix on the homepage),
+(the game), `build3d.js` (the scroll-driven 3D chip build on the homepage),
 `fonts/` (self-hosted Inter + JetBrains Mono), `vendor/` (self-hosted
 three.js module + license).
 
-### The 3D homepage helix
+### The animations
 
-`helix3d.js` renders a full-page DNA helix behind the homepage; the camera
-rides down the strand as the visitor scrolls and an orange scanner band
-tracks the position (with the "Scanning · N%" readout bottom-left). It is
-theme-aware (recolors on toggle), renders a single static frame under
-`prefers-reduced-motion`, pauses when the tab is hidden, and dims on
-phones for text contrast. If WebGL is unavailable it bails silently and
-the original 2D hero canvas in `script.js` takes over — don't remove the
-2D code path.
+**Homepage circuit intro** (`intro2d.js`, loaded on demand by
+`intro-boot.js`): once per browser session, circuit traces race in from
+the screen edges and converge on a ring around the spot where the name
+lands, a pulse fires, and the site cross-fades in. Plain 2D canvas — the
+homepage never downloads three.js. The head script in `index.html` hides
+the site before first paint (with a failsafe timeout); Skip button and
+Escape end it early, and the "Replay intro" control in the footer clears
+the session flag. Never plays under `prefers-reduced-motion`.
+
+**PC build viewer** (`tower3d.js` on `builds.html`, lazy-loaded by
+`tower-boot.js` when scrolled into view): plays the full ~5-second build
+of the rig — traces grow into the true-scale ATX board, parts fly in and
+dock, the board tilts upright into a glass-paneled tower — flying the
+shared camera path, then settles into a frontal drag-to-orbit view with
+a "Rebuild" control. `pcscene.js` is the single source of truth for the
+3D model (`createPC`, `update(p, time, spin)`, `cameraPose`). Under
+reduced motion the finished rig renders statically; without WebGL the
+fallback text stays.
+
+Visits that never load the animation code get the 2D hero canvas from
+`script.js` — don't remove the 2D code path.
+
+### CI
+
+`.github/workflows/ci.yml` syntax-checks all JS and runs
+`test/smoke.mjs` (Playwright) on every PR: the intro lifecycle and
+teardown, both skip paths, reduced-motion bypass, the builds-page
+viewer, and console-error-free loads of every page. Run it locally with
+`npm i --no-save playwright && node test/smoke.mjs`.
+
+### Resume PDF
+
+`resume.pdf` is generated from `resume.html`'s print styles (headless
+Chrome → Letter, 0.5in margins). Regenerate it after editing the resume
+so the download link stays in sync.
 
 ## Editing content
 

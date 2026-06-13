@@ -195,6 +195,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // ===== Replay the build intro =====
+  const replayBtn = document.getElementById('replay-intro');
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => {
+      try { sessionStorage.removeItem('hb-intro-played'); } catch { /* storage blocked */ }
+      trackEvent('replay-intro');
+      scrollTo(0, 0);
+      location.reload();
+    });
+  }
+
   // Shared with guide.js (the build configurator)
   window.hbShop = { amazonSearchUrl, neweggSearchUrl, amazonProductUrl, trackEvent };
 
